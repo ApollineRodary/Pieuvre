@@ -1,1 +1,11 @@
-_tags
+# ocamlbuild working directory
+_build/
+
+# Dune generated files
+*.install
+
+# Local OPAM switch
+_opam/
+
+# Visual Studio Code settings
+.vscode/

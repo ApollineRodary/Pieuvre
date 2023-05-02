@@ -1,2 +1,3 @@
-(test
-    (name Pieuvre))
+(tests
+    (names alpha_fixed fresh_var alpha_convert)
+    (libraries lambda))

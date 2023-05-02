@@ -79,3 +79,18 @@ let find_fresh_variable (x : var) (env : (var*var) list) : var =
     
     in aux m x []
         
+let is_alpha_convertible (m : lam) (n : lam) : bool = 
+    let rec aux (m : lam) (n : lam) (env : (var*var) list)= match (m, n) with
+        | (Application (m1, m2), Application (n1, n2)) -> (aux m1 n1 env) && (aux m2 n2 env)
+        | (Abstraction (x, _, m), Abstraction (y, _, n)) ->
+            let x' = find_fresh_variable x env in
+            aux m n ((x,x')::(y,x')::env)
+        | (Var x, Var y) ->
+            begin
+                match (List.assoc_opt x env, List.assoc_opt y env) with
+                    | (None, None) -> x = y
+                    | (Some x', Some y') -> x' = y'
+                    | _ -> false
+            end
+        | _ -> false
+    in aux m n []

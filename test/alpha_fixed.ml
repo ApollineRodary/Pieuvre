@@ -1,3 +1,6 @@
+print_string "=== Test alpha_convert_fixed ==="; print_newline();
+
+
 let l1 = (*(la x . la y . t x y)(la u . y u)*)
     Lambda.Application (
         Lambda.Abstraction ("x", "A", Lambda.Abstraction ("y", "A", 

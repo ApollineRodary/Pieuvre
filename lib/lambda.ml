@@ -7,24 +7,32 @@ type lam =
     | Var of var
     | Exf of lam*t
 
-let rec print_lam (l:lam): unit = match l with
-    | Abstraction (v, t, l) -> begin
-        print_string ("fun (" ^ v ^ ":" ^ t ^ ") => ");
-        print_lam l
-    end
-    | Application (m, n) -> begin
-        print_lam m;
-        print_lam n
-    end
-    | Var x -> print_string x;
-    | Exf (l, t) -> begin
-        print_string "exf(";
-        print_lam l;
-        print_string (":" ^ t ^ ")")
-    end
+let print_lam (l:lam): unit =
+    let rec aux (l:lam) (p:bool) = match l with
+        | Abstraction (v, t, l) -> begin
+            if p then print_string "(";
+            print_string ("fun (" ^ v ^ ":" ^ t ^ ") => ");
+            aux l true;
+            if p then print_string ")";
+        end
+        | Application (m, n) -> begin
+            if p then print_string "(";
+            aux m true;
+            print_string " ";
+            aux n true;
+            if p then print_string ")";
+        end
+        | Var x -> print_string x;
+        | Exf (l, t) -> begin
+            print_string "exf(";
+            aux l false;
+            print_string (":" ^ t ^ ")")
+        end
+    in aux l false
 
-let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam = 
-    let rec aux b m x x' = match m with (*b represents if the variable we want to alpha-convert is bound or not*)
+let alpha_convert_fixed (m:lam) (x:var) (x':var): lam =
+    (*Alpha-convert x to x' in m*) 
+    let rec aux b m x x' = match m with (*b represents whether the variable we want to alpha-convert is bound or not*)
         | Abstraction (y, t, n) -> 
             if x != y then 
                 Abstraction (y, t, aux b n x x')
@@ -43,8 +51,8 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
         | Exf (n, t) -> Exf (aux b n x x', t)
     in aux false m x x'
 
-let find_fresh_variable (x : var) (env : (var*var) list) : var =
-    let rec aux (i : int) (x : var) (env : (var*var) list) : var = match env with
+let find_fresh_variable (x:var) (env:(var*var) list): var =
+    let rec aux (i:int) (x:var) (env:(var*var) list): var = match env with
         | [] -> x ^ (string_of_int i)
         | (y', y)::q -> 
             if y' = x then 
@@ -56,8 +64,7 @@ let find_fresh_variable (x : var) (env : (var*var) list) : var =
                 
             else
                 aux i x q
-    in aux 0 x env 
-        
+    in aux 0 x env
 
  let alpha_convert (m : lam) (x : var) : lam =
     let rec aux (m : lam) (x : var) (env : (var*var) list) = match m with

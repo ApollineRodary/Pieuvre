@@ -18,4 +18,7 @@ let l1'' = Lambda.alpha_convert l1 "y" in Lambda.print_lam l1''; print_newline()
 
 let l2 = Lambda.Abstraction ("x", "A", Lambda.Abstraction ("x", "B", Application (Var "x", Var "x"))) in 
 Lambda.print_lam l2; print_newline();
-let l2' = Lambda.alpha_convert l2 "x" in Lambda.print_lam l2'
+let l2' = Lambda.alpha_convert l2 "x" in Lambda.print_lam l2'; print_newline ();
+let l2'' = Lambda.alpha_convert l2 "a" in Lambda.print_lam l2''; print_newline ();
+
+let l3 = Lambda.Application (Lambda.Var "u", Lambda.Var "y") in let l3' = Lambda.alpha_convert l3 "y0" in Lambda.print_lam l3';

@@ -15,4 +15,7 @@ let l1 = Lambda.Application (
 in
 let x = Lambda.find_fresh_variable "x" l1 in print_string x; print_newline ();
 
-let l2 = Lambda.Var "x" in let x = Lambda.find_fresh_variable "x" l2 in print_string x;
+let l2 = Lambda.Var "x" in let x = Lambda.find_fresh_variable "x" l2 in print_string x; print_newline ();
+let l3 = Lambda.Application (Lambda.Var "x", Lambda.Var "y") in let x = Lambda.find_fresh_variable "y" l3 in print_string x; print_newline ();
+
+let l4 = Lambda.Application (Lambda.Var "x0", Lambda.Var "y1") in let x = Lambda.find_fresh_variable "x" l4 in print_string x;

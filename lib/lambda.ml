@@ -1,6 +1,10 @@
 type var = string
 type t = string
 
+let rec print_list (l : string list) = match l with
+    | [] -> print_newline ();
+    | t::q -> print_string t ; print_list q;
+
 type lam =
     | Abstraction of var*t*lam
     | Application of lam*lam
@@ -50,8 +54,13 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
     in aux false m x x'
 
 
-let get_suffix_number (x : var) (y : var) : int option = int_of_string_opt (String.sub y (String.length x) (String.length y - String.length x))
-        
+let get_suffix_number (x : var) (y : var) : int option = 
+    try
+        int_of_string_opt (String.sub y (String.length x) (String.length y - String.length x))
+    with
+        | Invalid_argument s when s = "String.sub / Bytes.sub" -> None
+        | e -> raise e
+
 let find_fresh_variable (x : var) (m : lam) : var =
     let rec aux (i : int) (x : var) (m : lam) : var = match m with
         | Application (m, n) -> 
@@ -128,15 +137,19 @@ let rec get_free_variables (m : lam) : var list = match m with
     | Application (m1, m2) -> (get_free_variables m1) @ (get_free_variables m2)
     | Abstraction (x, _, m) ->
         begin
-            let rec aux l = match l with
+            let rec del_t l = match l with
                 | [] -> []
-                | t::q when t = x -> aux q
-                | t::q -> t::(aux q)
+                | t::q when t = x -> del_t q
+                | t::q -> t::(del_t q)
             in
-            aux (get_free_variables m)
+            del_t (get_free_variables m)
         end
     | Var y -> [y]
     | Exf (m, _) -> get_free_variables m
+
+let rec alpha_convert_list (m : lam) (l : var list) : lam = match l with
+    | [] -> m
+    | x::q -> alpha_convert_list (alpha_convert m x) q
 
 let rec betastep (m : lam) : lam option = match m with
     | Application (m1, m2) -> 
@@ -150,10 +163,7 @@ let rec betastep (m : lam) : lam option = match m with
                             | Abstraction (x, _, m1') -> 
                                 begin
                                     let l = get_free_variables m2 in
-                                    let rec aux m l = match l with
-                                        | [] -> m
-                                        | t::q -> aux (alpha_convert m t) q
-                                    in let m1'' = aux m1' l in
+                                    let m1'' = alpha_convert_list m1' l in
                                     let m1''' = alpha_convert m1'' x in
                                     Some (subst m1''' x m2)
                                 end
@@ -177,3 +187,8 @@ let rec betastep (m : lam) : lam option = match m with
                 | None -> None
         end
         
+let rec reduce (m : lam) : unit = 
+    print_lam m; print_newline ();
+    match betastep m with
+        | Some m' -> reduce m';
+        | None -> ()

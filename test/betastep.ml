@@ -1,16 +1,17 @@
 print_string "=== Beta reduction ==="; print_newline();
 
+let a = Lambda.TypeVar "A" in
 
 let l = Lambda.Application(
-    Lambda.Abstraction ("x", "A", 
-        Lambda.Abstraction ("y", "A",
+    Lambda.Abstraction ("x", a, 
+        Lambda.Abstraction ("y", a,
             Lambda.Application (
                 Lambda.Var "x",
                 Lambda.Var "y"
             )
         )
     ),
-    Lambda.Abstraction ("u", "A", 
+    Lambda.Abstraction ("u", a, 
         Lambda.Application (
             Var "u",
             Var "y"
@@ -22,9 +23,9 @@ in
     | Some l' -> Lambda.print_lam l'; print_newline ();
     | None -> print_string "erreur"; print_newline ();
 );
-let l' = Lambda.Abstraction ("y0", "A",
+let l' = Lambda.Abstraction ("y0", a,
     Lambda.Application (
-        Lambda.Abstraction ("u", "A", Lambda.Application (Lambda.Var "u", Lambda.Var "y")),
+        Lambda.Abstraction ("u", a, Lambda.Application (Lambda.Var "u", Lambda.Var "y")),
         Lambda.Var "y0"
     )
 )

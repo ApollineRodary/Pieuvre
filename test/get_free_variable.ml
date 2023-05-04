@@ -1,16 +1,17 @@
 print_string "=== Test get free variables ==="; print_newline();
 
+let a = Lambda.TypeVar "A" in
 
 let l1 = (*(la x . la y . t x y)(la u . y u)*)
     Lambda.Application (
-        Lambda.Abstraction ("x", "A", Lambda.Abstraction ("y", "A", 
+        Lambda.Abstraction ("x", a, Lambda.Abstraction ("y", a, 
             Lambda.Application (
                 Lambda.Application(Var ("t"), Lambda.Var ("x")),
                 Lambda.Var ("y")
             )
         )),
 
-        Lambda.Abstraction ("u", "A", Lambda.Application (Lambda.Var ("y"), Lambda.Var ("u")))
+        Lambda.Abstraction ("u", a, Lambda.Application (Lambda.Var ("y"), Lambda.Var ("u")))
     )
 in
 let rec print_list (l : string list) = match l with

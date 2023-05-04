@@ -1,16 +1,17 @@
 print_string "=== Reduction ==="; print_newline();
 
+let a = Lambda.TypeVar "A" in
 
 let l = Lambda.Application(
-    Lambda.Abstraction ("x", "A", 
-        Lambda.Abstraction ("y", "A",
+    Lambda.Abstraction ("x", a, 
+        Lambda.Abstraction ("y", a,
             Lambda.Application (
                 Lambda.Var "x",
                 Lambda.Var "y"
             )
         )
     ),
-    Lambda.Abstraction ("u", "A", 
+    Lambda.Abstraction ("u", a, 
         Lambda.Application (
             Var "u",
             Var "y"

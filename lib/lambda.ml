@@ -1,21 +1,39 @@
 type var = string
-type t = string
+type ty = 
+    | TypeVar of var
+    | Arrow of ty*ty
+    | False
 
 let rec print_list (l : string list) = match l with
     | [] -> print_newline ();
     | t::q -> print_string t ; print_list q;
 
 type lam =
-    | Abstraction of var*t*lam
+    | Abstraction of var*ty*lam
     | Application of lam*lam
     | Var of var
-    | Exf of lam*t
+    | Exf of lam*ty
+
+let print_type (t : ty) : unit =
+    let rec aux (t:ty) (p:bool) = match t with
+        | Arrow (t1, t2) -> begin
+            if p then print_string "(";
+            aux t1 true;
+            print_string (" -> ");
+            aux t2 false;
+            if p then print_string ")";
+        end
+        | TypeVar x -> print_string x;
+        | False -> print_string "False"
+    in aux t false
 
 let print_lam (l:lam): unit =
     let rec aux (l:lam) (p:bool) = match l with
         | Abstraction (v, t, l) -> begin
             if p then print_string "(";
-            print_string ("fun (" ^ v ^ ":" ^ t ^ ") => ");
+            print_string ("fun (" ^ v ^ ":");
+            print_type t;
+            print_string (") => ");
             aux l true;
             if p then print_string ")";
         end
@@ -30,7 +48,9 @@ let print_lam (l:lam): unit =
         | Exf (l, t) -> begin
             print_string "exf(";
             aux l false;
-            print_string (":" ^ t ^ ")")
+            print_string (":");
+            print_type t;
+            print_string (")");
         end
     in aux l false
 
@@ -192,3 +212,45 @@ let rec reduce (m : lam) : unit =
     match betastep m with
         | Some m' -> reduce m';
         | None -> ()
+
+let rec infer_type (gam : (var * ty) list) (m : lam) : ty option = match m with
+    | Abstraction (x, t, m) -> 
+        begin
+            match infer_type ((x, t)::gam) m with
+                | Some t' -> Some (Arrow (t, t'))
+                | _ -> None
+        end
+    | Application (m, n) -> 
+        begin
+            let t1opt = infer_type gam n in
+            let t2opt = infer_type gam m in match t1opt, t2opt with
+                | Some t1, Some(Arrow (t2, t2')) when t2 = t1 -> Some t2'
+                | _ -> None
+        end
+    | Var y -> List.assoc_opt y gam
+    | Exf (m, t) -> 
+        begin
+            if infer_type gam m = Some False then
+                Some t
+            else
+                None
+        end
+
+let rec typecheck (gam : (var * ty) list) (m : lam) (t : ty) : bool = match m, t with
+    | (Abstraction (x, t, m), Arrow (t1, t2)) -> t1 = t2 && typecheck ((x, t)::gam) m t2
+    | (Application (m, n), _) ->
+        begin
+            match (infer_type gam m, infer_type gam n) with
+                | (Some (Arrow (t1, t2)), Some t3) -> t1 = t3 && t2 = t
+                | _ -> false
+        end
+    | (Var y, _) -> 
+        begin
+            match List.assoc_opt y gam with
+                | Some t' -> print_type t' ; t = t'
+                | None -> false
+        end
+    
+    | (Exf (m, t'), _) -> (typecheck gam m False) && t' = t 
+    | _ -> false
+    

@@ -1,5 +1,5 @@
 %{
-    open Types
+    open Lambda
 %}
 
 %token FUN

@@ -1,4 +1,3 @@
-open Types
 open Lambda
 
 let () = print_endline "=== Is alpha convertible ===";

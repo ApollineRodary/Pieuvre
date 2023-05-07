@@ -1,6 +1,4 @@
-open Types
 open Lambda
-open Display
 
 let () = print_endline "=== Beta reduction ===";
 

@@ -1,20 +1,23 @@
-print_string "=== Test get free variables ==="; print_newline();
+open Types
+open Lambda
 
-let a = Lambda.TypeVar "A" in
+let () = print_endline "=== Test get free variables ===";
+
+let a = TypeVar "A" in
 
 let l1 = (*(la x . la y . t x y)(la u . y u)*)
-    Lambda.Application (
-        Lambda.Abstraction ("x", a, Lambda.Abstraction ("y", a, 
-            Lambda.Application (
-                Lambda.Application(Var ("t"), Lambda.Var ("x")),
-                Lambda.Var ("y")
+    Application (
+        Abstraction ("x", a, Abstraction ("y", a, 
+            Application (
+                Application(Var ("t"), Var ("x")),
+                Var ("y")
             )
         )),
 
-        Lambda.Abstraction ("u", a, Lambda.Application (Lambda.Var ("y"), Lambda.Var ("u")))
+        Abstraction ("u", a, Application (Var ("y"), Var ("u")))
     )
 in
 let rec print_list (l : string list) = match l with
     | [] -> print_newline ();
     | t::q -> print_string t ; print_list q;
-in print_list (Lambda.get_free_variables l1);
+in print_list (get_free_variables l1);

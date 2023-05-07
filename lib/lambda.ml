@@ -1,58 +1,5 @@
-type var = string
-type ty = 
-    | TypeVar of var
-    | Arrow of ty*ty
-    | False
-
-let rec print_list (l : string list) = match l with
-    | [] -> print_newline ();
-    | t::q -> print_string t ; print_list q;
-
-type lam =
-    | Abstraction of var*ty*lam
-    | Application of lam*lam
-    | Var of var
-    | Exf of lam*ty
-
-let print_type (t : ty) : unit =
-    let rec aux (t:ty) (p:bool) = match t with
-        | Arrow (t1, t2) -> begin
-            if p then print_string "(";
-            aux t1 true;
-            print_string (" -> ");
-            aux t2 false;
-            if p then print_string ")";
-        end
-        | TypeVar x -> print_string x;
-        | False -> print_string "False"
-    in aux t false
-
-let print_lam (l:lam): unit =
-    let rec aux (l:lam) (p:bool) = match l with
-        | Abstraction (v, t, l) -> begin
-            if p then print_string "(";
-            print_string ("fun (" ^ v ^ ":");
-            print_type t;
-            print_string (") => ");
-            aux l true;
-            if p then print_string ")";
-        end
-        | Application (m, n) -> begin
-            if p then print_string "(";
-            aux m true;
-            print_string " ";
-            aux n true;
-            if p then print_string ")";
-        end
-        | Var x -> print_string x;
-        | Exf (l, t) -> begin
-            print_string "exf(";
-            aux l false;
-            print_string (":");
-            print_type t;
-            print_string (")");
-        end
-    in aux l false
+open Types
+open Display
 
 let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam = 
     let rec aux b m x x' = match m with (*b represents whether the variable we want to alpha-convert is bound or not*)
@@ -72,7 +19,6 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
                 m
         | Exf (n, t) -> Exf (aux b n x x', t)
     in aux false m x x'
-
 
 let get_suffix_number (x : var) (y : var) : int option = 
     try
@@ -247,7 +193,7 @@ let rec typecheck (gam : (var * ty) list) (m : lam) (t : ty) : bool = match m, t
     | (Var y, _) -> 
         begin
             match List.assoc_opt y gam with
-                | Some t' -> print_type t' ; t = t'
+                | Some t' -> t = t'
                 | None -> false
         end
     

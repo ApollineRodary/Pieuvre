@@ -1,47 +1,50 @@
-print_string "=== Is alpha convertible ==="; print_newline();
+open Types
+open Lambda
+
+let () = print_endline "=== Is alpha convertible ===";
 
 let print_bool b = if b then print_string "true" else print_string "false" in
 
-let a = Lambda.TypeVar "A" in
+let a = TypeVar "A" in
 
 let l1 = (*(la x . la y . t x y)(la u . y u)*)
-    Lambda.Application (
-        Lambda.Abstraction ("x", a, Lambda.Abstraction ("y", a, 
-            Lambda.Application (
-                Lambda.Application(Var ("t"), Lambda.Var ("x")),
-                Lambda.Var ("y")
+    Application (
+        Abstraction ("x", a, Abstraction ("y", a, 
+            Application (
+                Application(Var ("t"), Var ("x")),
+                Var ("y")
             )
         )),
 
-        Lambda.Abstraction ("u", a, Lambda.Application (Lambda.Var ("y"), Lambda.Var ("u")))
+        Abstraction ("u", a, Application (Var ("y"), Var ("u")))
     )
 in
 
 let l2 = (*(la z . la k . t z k)(la v . y v)*)
-    Lambda.Application (
-        Lambda.Abstraction ("z", a, Lambda.Abstraction ("k", a, 
-            Lambda.Application (
-                Lambda.Application(Lambda.Var ("t"), Lambda.Var ("z")),
-                Lambda.Var ("k")
+    Application (
+        Abstraction ("z", a, Abstraction ("k", a, 
+            Application (
+                Application(Var ("t"), Var ("z")),
+                Var ("k")
             )
         )),
 
-        Lambda.Abstraction ("v", a, Lambda.Application (Lambda.Var ("y"), Lambda.Var ("v")))
+        Abstraction ("v", a, Application (Var ("y"), Var ("v")))
     )
 in
 let l3 = (*(la z . la k . t z k)(la v . k v)*)
-    Lambda.Application (
-        Lambda.Abstraction ("z", a, Lambda.Abstraction ("k", a, 
-            Lambda.Application (
-                Lambda.Application(Lambda.Var ("t"), Lambda.Var ("z")),
-                Lambda.Var ("k")
+    Application (
+        Abstraction ("z", a, Abstraction ("k", a, 
+            Application (
+                Application(Var ("t"), Var ("z")),
+                Var ("k")
             )
         )),
 
-        Lambda.Abstraction ("v", a, Lambda.Application (Lambda.Var ("k"), Lambda.Var ("v")))
+        Abstraction ("v", a, Application (Var ("k"), Var ("v")))
     )
 in
-print_bool (Lambda.is_alpha_convertible l1 l2) ; print_newline();
-print_bool (Lambda.is_alpha_convertible l2 l1) ; print_newline();
-print_bool (Lambda.is_alpha_convertible l2 l3) ; print_newline();
-print_bool (Lambda.is_alpha_convertible l3 l1) ; print_newline();
+print_bool (is_alpha_convertible l1 l2) ; print_newline();
+print_bool (is_alpha_convertible l2 l1) ; print_newline();
+print_bool (is_alpha_convertible l2 l3) ; print_newline();
+print_bool (is_alpha_convertible l3 l1) ; print_newline();

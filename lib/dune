@@ -1,2 +1,13 @@
 (library
-    (name lambda))
+    (name types)
+    (modules types))
+
+(library
+    (name display)
+    (modules display)
+    (libraries types))
+
+(library
+    (name lambda)
+    (modules lambda)
+    (libraries display))

@@ -1,23 +1,26 @@
-print_string "=== Test fresh_var ==="; print_newline();
+open Types
+open Lambda
 
-let a = Lambda.TypeVar "A" in
+let () = print_endline "=== Test fresh_var ===";
+
+let a = TypeVar "A" in
 
 
-let l1 = Lambda.Application (
-    Lambda.Abstraction ("x", a, 
-        Lambda.Abstraction ("x1", a,
-            Lambda.Application (
-                Lambda.Var ("x2"),
-                Lambda.Var ("x5")
+let l1 = Application (
+    Abstraction ("x", a, 
+        Abstraction ("x1", a,
+            Application (
+                Var ("x2"),
+                Var ("x5")
             )
         )
     ),
-    Lambda.Abstraction ("x5a", a, Lambda.Var "x0")
+    Abstraction ("x5a", a, Var "x0")
 )
 in
-let x = Lambda.find_fresh_variable "x" l1 in print_string x; print_newline ();
+let x = find_fresh_variable "x" l1 in print_string x; print_newline ();
 
-let l2 = Lambda.Var "x" in let x = Lambda.find_fresh_variable "x" l2 in print_string x; print_newline ();
-let l3 = Lambda.Application (Lambda.Var "x", Lambda.Var "y") in let x = Lambda.find_fresh_variable "y" l3 in print_string x; print_newline ();
+let l2 = Var "x" in let x = find_fresh_variable "x" l2 in print_string x; print_newline ();
+let l3 = Application (Var "x", Var "y") in let x = find_fresh_variable "y" l3 in print_string x; print_newline ();
 
-let l4 = Lambda.Application (Lambda.Var "x0", Lambda.Var "y1") in let x = Lambda.find_fresh_variable "x" l4 in print_string x;
+let l4 = Application (Var "x0", Var "y1") in let x = find_fresh_variable "x" l4 in print_string x;

@@ -1,3 +1,3 @@
 (tests
     (names alpha_fixed fresh_var alpha_convert is_alpha_convertible substitution betastep reduce get_free_variable)
-    (libraries lambda))
+    (libraries lambda types display))

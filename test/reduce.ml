@@ -1,21 +1,24 @@
-print_string "=== Reduction ==="; print_newline();
+open Types
+open Lambda
 
-let a = Lambda.TypeVar "A" in
+let () = print_endline "=== Reduction ===";
 
-let l = Lambda.Application(
-    Lambda.Abstraction ("x", a, 
-        Lambda.Abstraction ("y", a,
-            Lambda.Application (
-                Lambda.Var "x",
-                Lambda.Var "y"
+let a = TypeVar "A" in
+
+let l = Application(
+    Abstraction ("x", a, 
+        Abstraction ("y", a,
+            Application (
+                Var "x",
+                Var "y"
             )
         )
     ),
-    Lambda.Abstraction ("u", a, 
-        Lambda.Application (
+    Abstraction ("u", a, 
+        Application (
             Var "u",
             Var "y"
         )
     )
 )
-in Lambda.reduce l;
+in reduce l;

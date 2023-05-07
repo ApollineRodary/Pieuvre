@@ -1,34 +1,38 @@
-print_string "=== Beta reduction ==="; print_newline();
+open Types
+open Lambda
+open Display
 
-let a = Lambda.TypeVar "A" in
+let () = print_endline "=== Beta reduction ===";
 
-let l = Lambda.Application(
-    Lambda.Abstraction ("x", a, 
-        Lambda.Abstraction ("y", a,
-            Lambda.Application (
-                Lambda.Var "x",
-                Lambda.Var "y"
+let a = TypeVar "A" in
+
+let l = Application(
+    Abstraction ("x", a, 
+        Abstraction ("y", a,
+            Application (
+                Var "x",
+                Var "y"
             )
         )
     ),
-    Lambda.Abstraction ("u", a, 
-        Lambda.Application (
+    Abstraction ("u", a, 
+        Application (
             Var "u",
             Var "y"
         )
     )
 )
 in
-(match Lambda.betastep l with
-    | Some l' -> Lambda.print_lam l'; print_newline ();
+(match betastep l with
+    | Some l' -> print_lam l'; print_newline ();
     | None -> print_string "erreur"; print_newline ();
 );
-let l' = Lambda.Abstraction ("y0", a,
-    Lambda.Application (
-        Lambda.Abstraction ("u", a, Lambda.Application (Lambda.Var "u", Lambda.Var "y")),
-        Lambda.Var "y0"
+let l' = Abstraction ("y0", a,
+    Application (
+        Abstraction ("u", a, Application (Var "u", Var "y")),
+        Var "y0"
     )
 )
-in match Lambda.betastep l' with
-    | Some l'' -> Lambda.print_lam l'';
+in match betastep l' with
+    | Some l'' -> print_lam l'';
     | None -> print_string "erreur";

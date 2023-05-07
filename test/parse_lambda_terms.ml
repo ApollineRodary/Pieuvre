@@ -1,5 +1,7 @@
 open Parsing.Main
 
+let () = print_endline "=== Parsing lambda terms ==="
+
 let lambda_strings = [
     "x";
     "fun (x:A) => x x";
@@ -8,7 +10,7 @@ let lambda_strings = [
 ]
 
 let parse_and_print s = match (parse_string s) with
-    | Some x -> Lambda.print_lam x
-    | None -> ()
+    | Some x -> Display.print_lam x; print_newline ()
+    | None -> print_endline "Parsing error"
 
 let _ = List.map parse_and_print lambda_strings

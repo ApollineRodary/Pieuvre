@@ -1,5 +1,5 @@
 %{
-    open Lambda
+    open Types
 %}
 
 %token FUN
@@ -26,9 +26,9 @@ term:
     | a = application
         { a }
     | FUN; LPAREN; x=VAR; COLON; a=VAR; RPAREN; MAPSTO; t=term
-        { Abstraction (x, a, t) }
+        { Abstraction (x, TypeVar(a), t) }
     | EXF; LPAREN; t=term; COLON; a=VAR; RPAREN
-        { Exf (t, a) }
+        { Exf (t, TypeVar(a)) }
 ;
 
 application:

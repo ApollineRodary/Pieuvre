@@ -13,6 +13,6 @@ while (!continue) do
     | "exit" -> continue := false
     | _ -> (match (parse_string s) with
         | Some x -> print_endline (string_of_lam x)
-        | None -> print_endline "Parsing error"
+        | None -> ()
     )
 done

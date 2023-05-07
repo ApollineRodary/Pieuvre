@@ -10,34 +10,74 @@
 %token MAPSTO
 %token EXF
 %token EOF
-%start <lam option> main
+%token TILDE
+%token ARR
+%token FALSE
+%start <lam option> lterm_option
+%start <ty option> ptype_option
 %%
 
-main:
-    | t = term; EOF
+(* Lambda terms *)
+
+lterm_option:
+    | lterm; EOF
+        { Some $1 }
+    | EOF
+        { None }
+
+lterm:
+    | simple_lterm
+        { $1 }
+    | application
+        { $1 }
+    | FUN; LPAREN; x=VAR; COLON; a=ptype; RPAREN; MAPSTO; t=lterm
+        { Abstraction (x, a, t) }
+    | EXF; LPAREN; t=lterm; COLON; a=ptype; RPAREN
+        { Exf (t, a) }
+;
+
+application:
+    | m = application; n = simple_lterm
+        { Application (m, n) }
+    | m = simple_lterm; n = simple_lterm
+        { Application (m, n) }
+;
+
+simple_lterm:
+    | VAR
+        { Var $1 }
+;
+
+(* Types *)
+
+ptype_option:
+    | t = ptype; EOF
         { Some t }
     | EOF
         { None }
 ;
 
-term:
-    | t = simple_term
-        { t }
-    | a = application
-        { a }
-    | FUN; LPAREN; x=VAR; COLON; a=VAR; RPAREN; MAPSTO; t=term
-        { Abstraction (x, TypeVar(a), t) }
-    | EXF; LPAREN; t=term; COLON; a=VAR; RPAREN
-        { Exf (t, TypeVar(a)) }
+ptype:
+    | simple_type
+        { $1 }
+    | type_arrow
+        { $1 }
 ;
 
-application:
-    | m = application; n = simple_term
-        { Application (m, n) }
-    | m = simple_term; n = simple_term
-        { Application (m, n) }
+simple_type:
+    | FALSE
+        { False }
+    | VAR
+        { TypeVar $1 }
+    | TILDE; simple_type
+        { Arrow ($2, False) }
+    | LPAREN ptype RPAREN
+        { $2 }
 ;
 
-simple_term:
-    | x = VAR
-        { Var x };
+type_arrow:
+    | a = type_arrow; ARR; b = simple_type
+        { Arrow (a, b) }
+    | a = simple_type; ARR; b = simple_type
+        { Arrow (a, b) }
+;

@@ -1,5 +1,5 @@
 let parse (lexbuf:Lexing.lexbuf) =
-    try Parser.main Lexer.tokenize lexbuf with
+    try (Parser.lterm_option Lexer.tokenize lexbuf) with
     | Lexer.SyntaxError msg -> (
         print_endline ("Syntax error: " ^ msg);
         None

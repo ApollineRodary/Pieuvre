@@ -1,0 +1,10 @@
+(library
+    (name parsing)
+    (modules main lexer parser)
+    (libraries lambda))
+
+(ocamllex lexer)
+
+(menhir
+    (modules parser)
+    (flags (--explain)))

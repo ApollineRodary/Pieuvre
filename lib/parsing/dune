@@ -1,6 +1,6 @@
 (library
     (name parsing)
-    (modules main lexer parser)
+    (modules parsing lexer parser)
     (libraries lambda))
 
 (ocamllex lexer)

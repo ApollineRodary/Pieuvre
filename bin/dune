@@ -1,4 +1,4 @@
 (executable
-    (public_name Pieuvre)
-    (name main)
-    (libraries lambda))
+    (public_name toplevel)
+    (name toplevel)
+    (libraries lambda parsing))

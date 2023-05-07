@@ -3,6 +3,7 @@ _build/
 
 # Dune generated files
 *.install
+*.conflicts
 
 # Local OPAM switch
 _opam/

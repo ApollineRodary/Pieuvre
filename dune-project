@@ -14,3 +14,5 @@
     (description "Proof assistant for the ENS de Lyon functional project course")
     (depends ocaml dune)
 )
+
+(using menhir 2.1)

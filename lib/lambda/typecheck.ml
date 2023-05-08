@@ -2,7 +2,8 @@ open Infer_type
 open Types
 
 let rec typecheck (gam : (var * ty) list) (m : lam) (t : ty) : bool = match m, t with
-    | Abstraction (x, t, m), Arrow (t1, t2) -> (t1 = t2) && typecheck ((x, t)::gam) m t2
+    | Abstraction (x, t, m), Arrow (t1, t2) -> 
+        (t1 = t) && typecheck ((x, t)::gam) m t2
     | Application (m, n), _ ->
         begin
             match (infer_type gam m, infer_type gam n) with

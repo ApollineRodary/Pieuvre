@@ -83,7 +83,7 @@ simple_type:
 ;
 
 type_arrow:
-    | a = type_arrow; ARR; b = simple_type
+    | a = simple_type; ARR; b = type_arrow
         { Arrow (a, b) }
     | a = simple_type; ARR; b = simple_type
         { Arrow (a, b) }

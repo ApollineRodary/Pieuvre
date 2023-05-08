@@ -8,7 +8,7 @@ let lambda_strings = [
     "fun (x:A) => fun (y:B) => x y"
 ]
 
-let parse_and_print s = match (parse_string s) with
+let parse_and_print s = match (lam_of_string s) with
     | Some x -> print_endline (string_of_lam x)
     | None -> print_endline "Parsing error"
 

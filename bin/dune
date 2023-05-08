@@ -1,4 +1,11 @@
 (executable
     (public_name toplevel)
     (name toplevel)
-    (libraries lambda parsing))
+    (libraries lambda parsing)
+    (modules toplevel))
+
+(executable
+    (public_name pieuvre)
+    (name pieuvre)
+    (libraries lambda parsing)
+    (modules pieuvre))

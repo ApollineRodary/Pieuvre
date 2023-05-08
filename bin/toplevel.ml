@@ -14,7 +14,7 @@ let () = begin
         | "exit" -> continue := false
         | _ ->
             begin
-                match (parse_string s) with
+                match (lam_of_string s) with
                 | Some x -> print_endline (string_of_lam x)
                 | None -> ()
             end

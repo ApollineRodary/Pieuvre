@@ -44,8 +44,8 @@ let l3 =
 let l4 = Abstraction ("x", a, Var "x")
 let l5 = Abstraction ("y", a, Var "x")
 
-let l6_opt = Parsing.parse_string "fun (x:A) => x"
-let l7_opt = Parsing.parse_string "fun (y:A) => y"
+let l6_opt = Parsing.lam_of_string "fun (x:A) => x"
+let l7_opt = Parsing.lam_of_string "fun (y:A) => y"
 
 let l6, l7 =
     match l6_opt, l7_opt with

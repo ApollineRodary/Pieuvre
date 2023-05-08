@@ -47,6 +47,8 @@ application:
 simple_lterm:
     | VAR
         { Var $1 }
+    | LPAREN lterm RPAREN
+        { $2 }
 ;
 
 (* Types *)

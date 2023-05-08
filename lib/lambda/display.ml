@@ -1,7 +1,9 @@
 open Types
 
 let string_of_type (t:ty): string =
-    let rec aux (t:ty) (p:bool) = (match t with
+    let rec aux (t:ty) (p:bool) =
+        (* p: whether to parenthesize the type if it is "complex enough"*)
+        match t with
         | Arrow (t1, t2) ->
               (if p then "(" else "")
             ^ aux t1 true
@@ -10,12 +12,14 @@ let string_of_type (t:ty): string =
             ^ (if p then ")" else "")
         | TypeVar x -> x
         | False -> "False"
-    ) in aux t false
+    in aux t false
 
 let print_type (t:ty): unit = print_string (string_of_type t)
 
 let string_of_lam (l:lam): string =
-    let rec aux (l:lam) (p:bool) = (match l with
+    let rec aux (l:lam) (p:bool) =
+        (* p: whether to parenthesize the lambda-term if it is "complex enough" *)
+        match l with
         | Abstraction (v, t, l) ->
               (if p then "(" else "")
             ^ "fun ("
@@ -33,12 +37,11 @@ let string_of_lam (l:lam): string =
             ^ (if p then ")" else "")
         | Var x -> x
         | Exf (l, t) ->
-              "exf("
+              "exf ("
             ^ aux l false
             ^ ":"
             ^ string_of_type t
             ^ ")"
-        )
     in aux l false
 
-    let print_lam (l:lam): unit = print_string (string_of_lam l)
+let print_lam (l:lam): unit = print_string (string_of_lam l)

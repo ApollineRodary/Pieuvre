@@ -1,10 +1,8 @@
 open Lambda
 
-let () = print_endline "=== Reduction ===";
+let a = TypeVar "A"
 
-let a = TypeVar "A" in
-
-let l = Application(
+let l = Application (
     Abstraction ("x", a, 
         Abstraction ("y", a,
             Application (
@@ -20,4 +18,8 @@ let l = Application(
         )
     )
 )
-in reduce l;
+
+let () = begin
+    print_endline "=== Reduction ===";
+    reduce l
+end

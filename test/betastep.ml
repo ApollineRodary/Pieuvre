@@ -1,9 +1,6 @@
 open Lambda
 
-let () = print_endline "=== Beta reduction ===";
-
-let a = TypeVar "A" in
-
+let a = TypeVar "A"
 let l = Application(
     Abstraction ("x", a, 
         Abstraction ("y", a,
@@ -20,17 +17,24 @@ let l = Application(
         )
     )
 )
-in
-(match betastep l with
-    | Some l' -> print_lam l'; print_newline ();
-    | None -> print_string "erreur"; print_newline ();
-);
+
 let l' = Abstraction ("y0", a,
     Application (
         Abstraction ("u", a, Application (Var "u", Var "y")),
         Var "y0"
     )
 )
-in match betastep l' with
+
+let () = begin
+    print_endline "=== Beta reduction ===";
+    
+    match betastep l with
+    | Some l' -> print_lam l';
+    | None -> print_string "Erreur";
+
+    print_newline ();
+
+    match betastep l' with
     | Some l'' -> print_lam l'';
-    | None -> print_string "erreur";
+    | None -> print_string "Erreur"
+end

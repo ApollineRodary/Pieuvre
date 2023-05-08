@@ -24,6 +24,7 @@ lterm_option:
         { Some $1 }
     | EOF
         { None }
+;
 
 lterm:
     | simple_lterm

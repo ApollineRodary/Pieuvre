@@ -12,9 +12,13 @@
 %token EOF
 %token TILDE
 %token ARR
+%token AMP
+%token PERIOD
 %token FALSE
 %start <lam option> lterm_option
 %start <ty option> ptype_option
+%start <(lam * lam) option> alpha_request
+%start <(lam * ty) option> typecheck_request
 %%
 
 (* Lambda terms *)
@@ -83,4 +87,18 @@ type_arrow:
         { Arrow (a, b) }
     | a = simple_type; ARR; b = simple_type
         { Arrow (a, b) }
+;
+
+(* Request for pieuvre -alpha *)
+
+alpha_request:
+    | m = lterm; AMP; n = lterm; PERIOD
+        { Some (m, n) }
+;
+
+(* Request for pieuvre -typecheck *)
+
+typecheck_request:
+    | l = lterm; COLON; t = ptype; PERIOD
+        { Some (l, t) }
 ;

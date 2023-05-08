@@ -17,6 +17,8 @@ rule tokenize = parse
     | ':'           { COLON }
     | "->"          { ARR }
     | '~'           { TILDE }
+    | '.'           { PERIOD }
+    | '&'           { AMP }
     | id            { VAR (Lexing.lexeme lexbuf) }
     | _             { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
     | eof           { EOF }

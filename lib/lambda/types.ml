@@ -10,3 +10,5 @@ type lam =
     | Application of lam * lam
     | Var of var
     | Exf of lam * ty
+
+type env = (lam*ty) list

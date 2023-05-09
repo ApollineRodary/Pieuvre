@@ -10,3 +10,4 @@ let betastep = Betastep.betastep
 let reduce = Reduce.reduce
 let infer_type = Infer_type.infer_type
 let typecheck = Typecheck.typecheck
+let fill = Fill.fill

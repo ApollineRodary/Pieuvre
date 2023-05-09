@@ -1,5 +1,5 @@
-open Holes
 open Lambda
+open Types
 
 let rec print_env (gam : env) = 
     print_newline ();
@@ -13,7 +13,8 @@ let rec print_env (gam : env) =
 
 let print_goals (goals : goal list) : unit =
     let nb = List.length goals in begin
-        print_endline ((string_of_int nb) ^ " goal" ^ (if nb > 1 then "s" else "")); print_newline ();
+        print_endline (string_of_int nb ^ (if nb > 1 then " goals" else " goal"));
+        print_newline ();
         let rec aux (goals : goal list) (i : int) : unit = begin
             match goals with
             | [] -> print_newline ();

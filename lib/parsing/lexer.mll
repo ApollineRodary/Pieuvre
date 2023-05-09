@@ -19,6 +19,13 @@ rule tokenize = parse
     | '~'           { TILDE }
     | '.'           { PERIOD }
     | '&'           { AMP }
+    | "assumption"  { ASSUMPTION }
+    | "exact"       { EXACT }
+    | "intro"       { INTRO }
+    | "intros"      { INTROS }
+    | "admit"       { ADMIT }
+    | "Admitted"    { ADMITTED }
+    | "Qed"         { QED }
     | id            { VAR (Lexing.lexeme lexbuf) }
     | _             { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
     | eof           { EOF }

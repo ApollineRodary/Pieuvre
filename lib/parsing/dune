@@ -1,7 +1,7 @@
 (library
     (name parsing)
     (modules parsing lexer parser)
-    (libraries lambda))
+    (libraries lambda proof))
 
 (ocamllex lexer)
 

@@ -1,12 +1,8 @@
-open Lambda
-
-type goal = (env*ty)
-
-type proof = lam*(goal list)
-
-let start (a : ty) : proof = (Hole, [([], a)])
+open Types
 
 let fill (m : lam) (n : lam) : lam option =
+    (* Fill in the first hole in m with n
+       Returns None if nothing was replaced *)
     let rec aux (m : lam) (n : lam) : lam option = match m with
         | Abstraction (x, t, m) -> 
             begin
@@ -16,16 +12,11 @@ let fill (m : lam) (n : lam) : lam option =
             end
         | Application (m1, m2) -> 
             begin
-                match aux m1 n with
-                | Some m1' -> Some (Application (m1', m2))
-                | None ->
-                    begin
-                        match aux m2 n with
-                        | Some m2' -> Some (Application (m1, m2'))
-                        | None -> None
-                    end
+                match (aux m1 n, aux m2 n) with
+                | Some m1', _ -> Some (Application (m1', m2))
+                | None, Some m2' -> Some (Application (m1, m2'))
+                | None, None -> None
             end
-        
         | Var _ -> None
         | Exf (m, t) ->
             begin

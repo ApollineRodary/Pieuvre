@@ -1,38 +1,69 @@
 open Lambda
-open Holes
+open Types
 
-let rec assoc_reverse_opt (l : ('a*'b) list) (x : 'b) : 'a option = match l with
+let rec assoc_reverse_opt (l,x : ('a*'b) list * 'b) : 'a option =
+    match l with
     | [] -> None
     | (a, b)::_ when b = x -> Some a
-    | _::q -> assoc_reverse_opt q x
+    | _::q -> assoc_reverse_opt (q, x)
 
-let assumption ((gam, a) as g: goal) : (lam*goal) option = match assoc_reverse_opt gam a with
-    | Some x -> Some (Var x, g)
-    | None -> print_endline "Assumption not found in hypothesis"; None
+let assumption (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | g::gs ->
+        begin
+            match assoc_reverse_opt g with
+            | Some x -> (Var x, gs)
+            | None -> raise Cannot_Apply_Tactic
+        end
 
-let exact (m : lam) ((gam, a) as g: goal) : (lam*goal) option =
-    if typecheck gam m a then Some (m, g)
-    else begin
-        print_endline "Lambda term does not correspond to the goal";
-        None
-    end
+let exact (m : lam) (gs: goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs ->
+        if typecheck gam m a then (m, gs)
+        else raise Cannot_Apply_Tactic
 
-let intro (x : var) ((gam, a) : goal) : (lam*goal) option = match a with
-    | Arrow (a, b) -> Some (Abstraction (x, a, Hole), (((x, a)::gam), b))
-    | _ -> print_endline "Impossible to intro: not an arrow type"; None
+let intro (x : var) (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, Arrow(a, b))::gs ->
+        Abstraction (x, a, Hole),
+        ((x, a)::gam, b)::gs
+    | _ -> raise Cannot_Apply_Tactic
 
-let intros (l : var list) ((gam, a): goal) : (lam * goal) option = 
-    let rec aux ((gam, a) as g : goal) (l : var list) (m : lam) = match l with
-        | [] -> Some (m, g)
-        | x::q -> 
-            begin
-                match intro x ((gam, a)) with
-                | Some (n, (gam', b)) -> 
-                    begin
-                        match fill n (Abstraction (x, b, Hole)) with
-                        | Some m' -> aux (gam', b) q m'
-                        | None -> None
-                    end
-                | None -> None
-            end
-    in aux ((gam, a)) l Hole 
+let intros (l : var list) (gs : goal list) : (lam * goal list) =
+    let rec aux (l : var list) (gs : goal list) (m : lam) =
+        match l with
+        | [] -> (m, gs)
+        | x::xs ->
+            let (n, gs) = intro x gs in
+            aux xs gs (Option.get (fill m n))
+    in aux l gs Hole
+
+let admit (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | _::xs -> Hole, xs
+
+let admitted (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise Proof_Admitted
+    | _ -> raise Incomplete_Proof
+
+let qed (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise Proven
+    | _ -> raise Incomplete_Proof
+
+let use_tactic (t : tactic) ((l, gs): proof) : proof =
+    let m, gs =
+        match t with
+        | Assumption -> assumption gs
+        | Intro x -> intro x gs
+        | Intros xs -> intros xs gs
+        | Exact -> failwith "aaa"
+        | Admit -> admit gs
+        | Qed -> qed gs
+        | Admitted -> admitted gs
+    in (Option.get (fill l m), gs)

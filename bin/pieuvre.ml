@@ -1,5 +1,6 @@
 open Parsing
 open Lambda
+open Proof
 
 type pieuvreMode =
 | Alpha
@@ -20,6 +21,51 @@ let get_channel (filename : string ref) =
     (*If no file name is provided, use standard input*)
     if (!filename = "") then stdin
     else open_in !filename
+
+let start_proof () =
+    ignore (Sys.command "clear");
+
+    let request = parse (Lexing.from_channel stdin) (Parsing__Parser.property_request) in
+    let prop = Option.get request
+    in begin
+        let proof = ref (start_proof prop) in
+        let message = ref "" in
+        let proven = ref false in
+        let continue = ref true in
+        while (!continue) do 
+            let (l, g) = !proof in begin
+                ignore (Sys.command "clear");
+                print_string !message;
+                message := "";
+                Proof__Display.print_goals g;
+                print_lam l;
+                print_newline ()
+            end;
+            let tactic = Option.get (parse (Lexing.from_channel stdin) (Parsing__Parser.ptactic)) in
+            try
+                proof := use_tactic tactic !proof
+            with
+            | Cannot_Apply_Tactic -> message := "Could not apply tactic\n"
+            | Incomplete_Proof -> message := "There are still subgoals to prove\n"
+            | No_Goals_Left -> message := "There are no subgoals to apply this tactic on\n"
+            | Proof_Admitted ->
+                begin
+                    message := "Admitted\n";
+                    continue := false
+                end
+            | Proven ->
+                begin
+                    proven := true;
+                    continue := false
+                end
+            ;
+        done;
+        
+        ignore (Sys.command "clear");
+        if (!proven) then
+            print_lam (fst !proof);
+        print_newline ();
+    end
 
 let alpha_mode () =
     let request = parse (Lexing.from_channel (get_channel filename)) (Parsing__Parser.alpha_request) in
@@ -46,5 +92,5 @@ let () = begin
     | Alpha -> alpha_mode ()
     | Reduce -> reduce_mode ()
     | Typecheck -> typecheck_mode ()
-    | InteractiveSession -> print_endline "Interactive mode not yet implemented"
+    | InteractiveSession -> start_proof ()
 end

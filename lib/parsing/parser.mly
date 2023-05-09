@@ -1,5 +1,6 @@
 %{
     open Lambda
+    open Proof
 %}
 
 %token FUN
@@ -15,10 +16,13 @@
 %token AMP
 %token PERIOD
 %token FALSE
+%token ASSUMPTION EXACT INTRO INTROS ADMIT ADMITTED QED
 %start <lam option> lterm_option
 %start <ty option> ptype_option
 %start <(lam * lam) option> alpha_request
 %start <(lam * ty) option> typecheck_request
+%start <ty option> property_request
+%start <tactic option> ptactic
 %%
 
 (* Lambda terms *)
@@ -102,3 +106,39 @@ typecheck_request:
     | l = lterm; COLON; t = ptype; PERIOD
         { Some (l, t) }
 ;
+
+
+(* Request for property to prove *)
+
+property_request:
+    | ptype PERIOD
+        { Some $1 }
+;
+
+ptactic:
+    | tactic_contents PERIOD
+        { Some $1 }
+;
+
+tactic_contents:
+    | ASSUMPTION
+        { Assumption }
+    | EXACT
+        { Exact }
+    | INTRO VAR
+        { Intro $2 }
+    | INTROS var_list
+        { Intros $2 }
+    | ADMIT
+        { Admit }
+    | QED
+        { Qed }
+    | ADMITTED
+        { Admitted }
+;
+
+var_list:
+    | VAR
+        { [$1] }
+    | VAR var_list
+        { $1 :: $2 }

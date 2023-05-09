@@ -1,7 +1,7 @@
 (executable
     (public_name toplevel)
     (name toplevel)
-    (libraries lambda parsing)
+    (libraries lambda parsing proof)
     (modules toplevel))
 
 (executable

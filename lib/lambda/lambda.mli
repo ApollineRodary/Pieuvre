@@ -10,3 +10,4 @@ val reduce : lam -> unit
 val betastep : lam -> lam option
 val infer_type : env -> lam -> ty option
 val typecheck : env -> lam -> ty -> bool
+val fill : lam -> lam -> lam option

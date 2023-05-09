@@ -18,4 +18,5 @@ let rec typecheck (gam : env) (m : lam) (t : ty) : bool = match m, t with
         end
     
     | Exf (m, t'), _ -> (typecheck gam m False) && (t' = t)
+    | Hole _, _ -> failwith "Try to typecheck a lambda term with hole(s)"
     | _ -> false

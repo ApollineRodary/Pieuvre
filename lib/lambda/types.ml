@@ -10,5 +10,6 @@ type lam =
     | Application of lam * lam
     | Var of var
     | Exf of lam * ty
+    | Hole of (lam->lam)
 
 type env = (lam*ty) list

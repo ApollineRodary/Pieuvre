@@ -20,3 +20,4 @@ let rec infer_type (gam : env) (m : lam) : ty option =
     | Exf (m, t) ->
         if infer_type gam m = Some False then Some t
         else None
+    | Hole _ -> failwith "Try to infer type of lambda term with hole(s)"

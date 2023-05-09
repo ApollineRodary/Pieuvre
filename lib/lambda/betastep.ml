@@ -23,7 +23,7 @@ let rec subst (m : lam) (x : var) (n : lam) : lam =
             Abstraction (y, t, subst m' x n)
     | Var y -> if y = x then n else m
     | Exf (m', t) -> Exf (subst m' x n, t)
-    | Hole _ -> failwith "Substition in lambda term with hole(s)"
+    | Hole -> failwith "Substition in lambda term with hole(s)"
 
 let rec get_free_variables (m : lam) : var list =
     (*Returns free variables used in m*)
@@ -40,7 +40,7 @@ let rec get_free_variables (m : lam) : var list =
         end
     | Var y -> [y]
     | Exf (m, _) -> get_free_variables m
-    | Hole _ -> failwith "Try to get free variables in lambda term with hole(s)"
+    | Hole -> failwith "Try to get free variables in lambda term with hole(s)"
 
 let rec betastep (m : lam) : lam option =
     match m with
@@ -79,5 +79,5 @@ let rec betastep (m : lam) : lam option =
                 | None -> None
         end
     
-    | Hole _ -> failwith "Try to reduce a lambda term with hole(s)"
+    | Hole -> failwith "Try to reduce a lambda term with hole(s)"
     

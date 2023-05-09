@@ -4,7 +4,7 @@ let rec infer_type (gam : env) (m : lam) : ty option =
     match m with
     | Abstraction (x, t, m) -> 
         begin
-            match infer_type ((Var x, t)::gam) m with
+            match infer_type ((x, t)::gam) m with
             | Some t' -> Some (Arrow (t, t'))
             | _ -> None
         end
@@ -16,8 +16,8 @@ let rec infer_type (gam : env) (m : lam) : ty option =
             | Some t1, Some(Arrow (t2, t2')) when t2 = t1 -> Some t2'
             | _ -> None
         end
-    | Var y -> List.assoc_opt (Var y) gam
+    | Var y -> List.assoc_opt y gam
     | Exf (m, t) ->
         if infer_type gam m = Some False then Some t
         else None
-    | Hole _ -> failwith "Try to infer type of lambda term with hole(s)"
+    | Hole -> failwith "Try to infer type of lambda term with hole(s)"

@@ -42,7 +42,7 @@ let string_of_lam (l:lam): string =
             ^ ":"
             ^ string_of_type t
             ^ ")"
-        | Hole _ -> " ? "
+        | Hole -> " ? "
     in aux l false
 
 let print_lam (l:lam): unit = print_string (string_of_lam l)

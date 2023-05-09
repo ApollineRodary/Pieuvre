@@ -10,7 +10,7 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
             if (b && y = x) then Var x'
             else m
         | Exf (n, t) -> Exf (aux b n x x', t)
-        | Hole _ -> failwith "Try to alpha convert a lambda term with hole(s)"
+        | Hole -> failwith "Try to alpha convert a lambda term with hole(s)"
     in aux false m x x'
 
 let get_suffix_number (x : var) (y : var) : int option =
@@ -50,7 +50,7 @@ let find_fresh_variable (x : var) (m : lam) : var =
                     | None -> x
             end
         | Exf (n, _) -> aux i x n
-        | Hole _ -> failwith "Try to find a fresh variable in lambda term with hole(s)"
+        | Hole -> failwith "Try to find a fresh variable in lambda term with hole(s)"
     in aux 0 x m
 
 let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
@@ -65,6 +65,6 @@ let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
             is_alpha_convertible m1 n1
     | Var x, Var y -> x = y
     | Exf (m, _),  Exf (n, _) -> is_alpha_convertible m n
-    | (Hole _, _) -> failwith "Try to test alpha convertibility with a lambda term with hole(s) (First argument)"
-    | (_, Hole _) -> failwith "Try to test alpha convertibility with a lambda term with hole(s) (Second argument)"
+    | (Hole, _) -> failwith "Try to test alpha convertibility with a lambda term with hole(s) (First argument)"
+    | (_, Hole) -> failwith "Try to test alpha convertibility with a lambda term with hole(s) (Second argument)"
     | _ -> false

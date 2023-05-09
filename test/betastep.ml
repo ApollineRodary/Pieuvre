@@ -1,6 +1,7 @@
 open Lambda
 
 let a = TypeVar "A"
+
 let l = Application(
     Abstraction ("x", a, 
         Abstraction ("y", a,
@@ -25,16 +26,26 @@ let l' = Abstraction ("y0", a,
     )
 )
 
-let () = begin
-    print_endline "=== Beta reduction ===";
-    
-    match betastep l with
-    | Some l' -> print_lam l';
-    | None -> print_string "Erreur";
+let%expect_test _ = begin
+    begin
+        match betastep l with
+        | Some l1 -> print_lam l1;
+        | None -> print_string "Erreur"
+    end;
+
+    [%expect{|
+      fun (y0:A) => ((fun (u:A) => (u y)) y0)
+    |}];
 
     print_newline ();
 
-    match betastep l' with
-    | Some l'' -> print_lam l'';
-    | None -> print_string "Erreur"
+    begin
+        match betastep l' with
+        | Some l'' -> print_lam l'';
+        | None -> print_string "Erreur"
+    end;
+    
+    [%expect{|
+      fun (y0:A) => (y0 y)
+    |}]
 end

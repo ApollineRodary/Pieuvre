@@ -63,7 +63,13 @@ let comparisons = [
 
 let print_alpha_convertibility (x, y) = print_bool (is_alpha_convertible x y)
 
-let () = begin
-    print_endline "=== Is alpha convertible ===";
-    ignore (List.map print_alpha_convertibility comparisons)
+let%expect_test _ = begin
+    ignore (List.map print_alpha_convertibility comparisons);
+    [%expect {|
+      true
+      true
+      false
+      false
+      false
+      true |}]
 end

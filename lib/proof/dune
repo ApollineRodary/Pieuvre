@@ -1,4 +1,4 @@
 (library
     (name proof)
-    (modules holes tactics)
+    (modules holes tactics display)
     (libraries lambda))

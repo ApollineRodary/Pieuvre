@@ -4,21 +4,26 @@
 }
 
 let whitespace = [' ' '\t' '\r' '\n']+
-let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let id = ['a'-'z']+ ['0'-'9']*
+let typeid = ['A'-'Z']+ ['0'-'9']*
 
 rule tokenize = parse
     | whitespace    { tokenize lexbuf }
-    | "exf"         { EXF }
     | "fun"         { FUN }
-    | "False"       { FALSE }
+    | "exf"         { EXF }
     | "=>"          { MAPSTO }
-    | '('           { LPAREN }
-    | ')'           { RPAREN }
     | ':'           { COLON }
+
+    | "False"       { FALSE }
     | "->"          { ARR }
     | '~'           { TILDE }
+
+    | '('           { LPAREN }
+    | ')'           { RPAREN }
+
     | '.'           { PERIOD }
     | '&'           { AMP }
+
     | "assumption"  { ASSUMPTION }
     | "exact"       { EXACT }
     | "intro"       { INTRO }
@@ -26,6 +31,8 @@ rule tokenize = parse
     | "admit"       { ADMIT }
     | "Admitted"    { ADMITTED }
     | "Qed"         { QED }
+
     | id            { VAR (Lexing.lexeme lexbuf) }
+    | typeid        { TYPEVAR (Lexing.lexeme lexbuf) }
     | _             { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
     | eof           { EOF }

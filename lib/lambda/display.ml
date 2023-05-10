@@ -24,7 +24,7 @@ let string_of_lam (l:lam): string =
               (if p then "(" else "")
             ^ "fun ("
             ^ v
-            ^ ":"
+            ^ " : "
             ^ string_of_type t
             ^ ") => "
             ^ aux l true

@@ -3,20 +3,15 @@
     open Proof
 %}
 
-%token FUN
-%token LPAREN
-%token RPAREN
+%token FUN MAPSTO EXF COLON
+%token TILDE ARR FALSE
+%token LPAREN RPAREN
+%token AMP PERIOD
 %token <string> VAR
-%token COLON
-%token MAPSTO
-%token EXF
-%token EOF
-%token TILDE
-%token ARR
-%token AMP
-%token PERIOD
-%token FALSE
+%token <string> TYPEVAR
 %token ASSUMPTION EXACT INTRO INTROS ADMIT ADMITTED QED
+%token EOF
+
 %start <lam option> lterm_option
 %start <ty option> ptype_option
 %start <(lam * lam) option> alpha_request
@@ -28,7 +23,7 @@
 (* Lambda terms *)
 
 lterm_option:
-    | lterm; EOF
+    | lterm EOF
         { Some $1 }
     | EOF
         { None }
@@ -39,17 +34,17 @@ lterm:
         { $1 }
     | application
         { $1 }
-    | FUN; LPAREN; x=VAR; COLON; a=ptype; RPAREN; MAPSTO; t=lterm
+    | FUN LPAREN; x=VAR; COLON; a=ptype; RPAREN MAPSTO; t=lterm
         { Abstraction (x, a, t) }
-    | EXF; LPAREN; t=lterm; COLON; a=ptype; RPAREN
+    | EXF LPAREN; t=lterm; COLON; a=ptype; RPAREN
         { Exf (t, a) }
 ;
 
 application:
-    | m = application; n = simple_lterm
-        { Application (m, n) }
-    | m = simple_lterm; n = simple_lterm
-        { Application (m, n) }
+    | application simple_lterm
+        { Application ($1, $2) }
+    | simple_lterm simple_lterm
+        { Application ($1, $2) }
 ;
 
 simple_lterm:
@@ -62,8 +57,8 @@ simple_lterm:
 (* Types *)
 
 ptype_option:
-    | t = ptype; EOF
-        { Some t }
+    | ptype EOF
+        { Some $1 }
     | EOF
         { None }
 ;
@@ -78,35 +73,34 @@ ptype:
 simple_type:
     | FALSE
         { False }
-    | VAR
+    | TYPEVAR
         { TypeVar $1 }
-    | TILDE; simple_type
+    | TILDE simple_type
         { Arrow ($2, False) }
     | LPAREN ptype RPAREN
         { $2 }
 ;
 
 type_arrow:
-    | a = simple_type; ARR; b = type_arrow
-        { Arrow (a, b) }
-    | a = simple_type; ARR; b = simple_type
-        { Arrow (a, b) }
+    | simple_type ARR type_arrow
+        { Arrow ($1, $3) }
+    | simple_type ARR simple_type
+        { Arrow ($1, $3) }
 ;
 
 (* Request for pieuvre -alpha *)
 
 alpha_request:
-    | m = lterm; AMP; n = lterm; PERIOD
-        { Some (m, n) }
+    | lterm AMP lterm PERIOD
+        { Some ($1, $3) }
 ;
 
 (* Request for pieuvre -typecheck *)
 
 typecheck_request:
-    | l = lterm; COLON; t = ptype; PERIOD
-        { Some (l, t) }
+    | lterm COLON ptype PERIOD
+        { Some ($1, $3) }
 ;
-
 
 (* Request for property to prove *)
 

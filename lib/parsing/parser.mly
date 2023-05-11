@@ -116,19 +116,19 @@ ptactic:
 
 tactic_contents:
     | ASSUMPTION
-        { Assumption }
+        { assumption }
     | EXACT lterm
-        { Exact $2 }
+        { exact $2 }
     | INTRO VAR
-        { Intro $2 }
+        { intro $2 }
     | INTROS var_list
-        { Intros $2 }
+        { intros $2 }
     | ADMIT
-        { Admit }
+        { admit }
     | QED
-        { Qed }
+        { qed }
     | ADMITTED
-        { Admitted }
+        { admitted }
 ;
 
 var_list:

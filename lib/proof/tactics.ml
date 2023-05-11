@@ -57,13 +57,5 @@ let qed (gs : goal list) : (lam * goal list) =
     | _ -> raise Incomplete_Proof
 
 let use_tactic (t : tactic) ((l, gs): proof) : proof =
-    let m, gs =
-        match t with
-        | Assumption -> assumption gs
-        | Intro x -> intro x gs
-        | Intros xs -> intros xs gs
-        | Exact m -> exact m gs
-        | Admit -> admit gs
-        | Qed -> qed gs
-        | Admitted -> admitted gs
-    in (Option.get (fill l m), gs)
+    let (m, gs) = t gs in 
+    (Option.get (fill l m), gs)

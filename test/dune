@@ -1,6 +1,6 @@
 (library
     (name tests)
     (modules is_alpha_convertible betastep reduce parse_lambda_terms)
-    (libraries lambda parsing)
+    (libraries lambda parsing proof)
     (inline_tests)
     (preprocess (pps ppx_expect ppx_inline_test)))

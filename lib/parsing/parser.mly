@@ -117,8 +117,8 @@ ptactic:
 tactic_contents:
     | ASSUMPTION
         { Assumption }
-    | EXACT
-        { Exact }
+    | EXACT lterm
+        { Exact $2 }
     | INTRO VAR
         { Intro $2 }
     | INTROS var_list

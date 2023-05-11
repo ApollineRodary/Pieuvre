@@ -8,7 +8,7 @@ type proof = lam * (goal list)
 
 type tactic =
 | Assumption
-| Exact
+| Exact of lam
 | Intro of var
 | Intros of var list
 | Admit

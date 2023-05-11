@@ -62,7 +62,7 @@ let use_tactic (t : tactic) ((l, gs): proof) : proof =
         | Assumption -> assumption gs
         | Intro x -> intro x gs
         | Intros xs -> intros xs gs
-        | Exact -> failwith "aaa"
+        | Exact m -> exact m gs
         | Admit -> admit gs
         | Qed -> qed gs
         | Admitted -> admitted gs

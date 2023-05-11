@@ -34,7 +34,7 @@ let%expect_test _ = begin
     end;
 
     [%expect{|
-      fun (y0:A) => ((fun (u:A) => (u y)) y0)
+      fun (y0 : A) => ((fun (u : A) => (u y)) y0)
     |}];
 
     print_newline ();
@@ -46,6 +46,6 @@ let%expect_test _ = begin
     end;
     
     [%expect{|
-      fun (y0:A) => (y0 y)
+      fun (y0 : A) => (y0 y)
     |}]
 end

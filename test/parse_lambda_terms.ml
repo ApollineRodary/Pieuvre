@@ -17,8 +17,8 @@ let%expect_test _ = begin
 
     [%expect {|
       x
-      fun (x:A) => (x x)
+      fun (x : A) => (x x)
       (x y) z
-      fun (x:A) => (fun (y:B) => (x y))
+      fun (x : A) => (fun (y : B) => (x y))
     |}]
 end

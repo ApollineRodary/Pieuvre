@@ -7,3 +7,7 @@ let rec reduce (m : lam) : unit =
     match betastep m with
     | Some m' -> reduce m'
     | None -> ()
+
+let rec normal (m : lam) : lam = match betastep m with
+    | Some m' -> normal m'
+    | None -> m

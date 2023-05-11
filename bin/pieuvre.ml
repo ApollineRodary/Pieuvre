@@ -63,7 +63,12 @@ let start_proof () =
         
         ignore (Sys.command "clear");
         if (!proven) then
-            print_lam (fst !proof);
+            let m = fst !proof in
+            let m' = normal m in
+            (if typecheck [] m' prop then
+                print_lam m'
+            else
+                print_endline "The built lambda term does not match the type. AAAAAAAAAAAAAHHHHH");
         print_newline ();
     end
 

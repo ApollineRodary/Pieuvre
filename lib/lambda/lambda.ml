@@ -8,6 +8,7 @@ let print_type = Display.print_type
 let is_alpha_convertible = Is_alpha_convertible.is_alpha_convertible
 let betastep = Betastep.betastep
 let reduce = Reduce.reduce
+let normal = Reduce.normal
 let infer_type = Infer_type.infer_type
 let typecheck = Typecheck.typecheck
 let fill = Fill.fill

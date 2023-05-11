@@ -7,6 +7,7 @@ val print_type : ty -> unit
 
 val is_alpha_convertible : lam -> lam -> bool
 val reduce : lam -> unit
+val normal : lam -> lam
 val betastep : lam -> lam option
 val infer_type : env -> lam -> ty option
 val typecheck : env -> lam -> ty -> bool

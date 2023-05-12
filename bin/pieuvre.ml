@@ -30,7 +30,6 @@ let start_proof () =
     in begin
         let proof = ref (start_proof prop) in
         let message = ref "" in
-        let proven = ref false in
         let continue = ref true in
         while (!continue) do 
             let (l, g) = !proof in begin
@@ -41,8 +40,8 @@ let start_proof () =
                 print_lam l;
                 print_newline ()
             end;
-            let tactic = Option.get (parse (Lexing.from_channel stdin) (Parsing__Parser.ptactic)) in
             try
+                let tactic = Option.get (parse (Lexing.from_channel stdin) (Parsing__Parser.ptactic)) in
                 proof := use_tactic tactic !proof
             with
             | Cannot_Apply_Tactic -> message := "Could not apply tactic\n"
@@ -55,21 +54,25 @@ let start_proof () =
                 end
             | Proven ->
                 begin
-                    proven := true;
+                    message := "Proven\n";
                     continue := false
                 end
+            | Invalid_argument _ -> message := "Parsing error :(\n"
             ;
         done;
         
         ignore (Sys.command "clear");
-        if (!proven) then
-            let m = fst !proof in
-            let m' = normal m in
-            (if typecheck [] m' prop then
-                print_lam m'
-            else
-                print_endline "The built lambda term does not match the type. AAAAAAAAAAAAAHHHHH");
+        print_type prop;
         print_newline ();
+        print_string !message;
+
+        let m = normal (fst !proof) in
+        begin if typecheck [] m prop then
+            print_endline (string_of_lam m)
+        else
+            print_endline "Failed to match lambda-term with the given lemma. This is expected if a goal was admitted."
+        end
+            
     end
 
 let alpha_mode () =

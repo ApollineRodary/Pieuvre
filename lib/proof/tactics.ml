@@ -41,6 +41,27 @@ let intros (l : var list) (gs : goal list) : (lam * goal list) =
             aux xs gs (Option.get (fill m n))
     in aux l gs Hole
 
+let apply (x : var) (gs : goal list) : (lam * goal list) =
+    let rec aux (goal_type : ty) (gam : env) (m : lam) (t : ty) (gs : goal list) : (lam * goal list) = 
+        if t = goal_type then (m, gs) else
+        match t with
+        | Arrow (a, b) -> aux goal_type gam (Application (m, Hole)) b ((gam, a)::gs)
+        | _ -> raise Cannot_Apply_Tactic
+    in
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> begin
+        match List.assoc_opt x gam with
+        | None -> raise Cannot_Apply_Tactic
+        | Some h -> 
+            let (m, gs') = aux a gam (Var x) h [] in
+            (m, (List.rev gs') @ gs)
+        end
+
+let cut (t : ty) (gs : goal list) : (lam * goal list) = match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> (Application (Hole, Hole), (gam, Arrow(t, a))::(gam, t)::gs)
+
 let admit (gs : goal list) : (lam * goal list) =
     match gs with
     | [] -> raise No_Goals_Left

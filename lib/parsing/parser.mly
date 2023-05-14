@@ -9,7 +9,7 @@
 %token AMP PERIOD
 %token <string> VAR
 %token <string> TYPEVAR
-%token ASSUMPTION EXACT INTRO INTROS ADMIT ADMITTED QED
+%token ASSUMPTION EXACT INTRO INTROS APPLY CUT ADMIT ADMITTED QED
 %token EOF
 
 %start <lam option> lterm_option
@@ -123,6 +123,10 @@ tactic_contents:
         { intro $2 }
     | INTROS var_list
         { intros $2 }
+    | APPLY VAR
+        { apply $2 }
+    | CUT ptype
+        { cut $2 }
     | ADMIT
         { admit }
     | QED

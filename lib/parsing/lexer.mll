@@ -28,6 +28,8 @@ rule tokenize = parse
     | "exact"       { EXACT }
     | "intro"       { INTRO }
     | "intros"      { INTROS }
+    | "apply"       { APPLY }
+    | "cut"         { CUT }
     | "admit"       { ADMIT }
     | "Admitted"    { ADMITTED }
     | "Qed"         { QED }

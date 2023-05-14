@@ -1,6 +1,6 @@
 include module type of Types
 
-val start_proof : Lambda.ty -> proof
+val proof_start : Lambda.ty -> proof
 val use_tactic : tactic -> proof -> proof
 
 val exact : Lambda.lam -> (goal list) -> (Lambda.lam * goal list)

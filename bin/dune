@@ -8,4 +8,4 @@
     (public_name pieuvre)
     (name pieuvre)
     (libraries lambda parsing)
-    (modules pieuvre))
+    (modules pieuvre proof_assistant))

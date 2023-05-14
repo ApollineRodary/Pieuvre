@@ -24,7 +24,9 @@ rule tokenize = parse
     | '.'           { PERIOD }
     | '&'           { AMP }
 
+    | "apply"       { APPLY }
     | "assumption"  { ASSUMPTION }
+    | "cut"         { CUT }
     | "exact"       { EXACT }
     | "intro"       { INTRO }
     | "intros"      { INTROS }

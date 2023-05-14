@@ -17,7 +17,7 @@ let assumption (gs : goal list) : (lam * goal list) =
             | None -> raise Cannot_Apply_Tactic
         end
 
-let exact (m : lam) (gs: goal list) : (lam * goal list) =
+let exact (m : lam) (gs : goal list) : (lam * goal list) =
     match gs with
     | [] -> raise No_Goals_Left
     | (gam, a)::gs ->
@@ -42,25 +42,33 @@ let intros (l : var list) (gs : goal list) : (lam * goal list) =
     in aux l gs Hole
 
 let apply (x : var) (gs : goal list) : (lam * goal list) =
-    let rec aux (goal_type : ty) (gam : env) (m : lam) (t : ty) (gs : goal list) : (lam * goal list) = 
-        if t = goal_type then (m, gs) else
-        match t with
-        | Arrow (a, b) -> aux goal_type gam (Application (m, Hole)) b ((gam, a)::gs)
+    let rec aux t_arr t_goal env gs =
+        (*Takes a chain of arrows (e.g. A->B->C->D) ending with a goal type and returns goals for each of the intermediate steps*)
+        match t_arr with
+        | Arrow (t1, t2) when t2 = t_goal ->
+            (Application (Var x, Hole), (env, t1)::gs)
+        | Arrow (t1, t2) ->
+            let lam, gs = aux t2 t_goal env gs in
+            (Application (Var x, lam), (env, t1)::gs)
         | _ -> raise Cannot_Apply_Tactic
-    in
+        in
     match gs with
     | [] -> raise No_Goals_Left
-    | (gam, a)::gs -> begin
-        match List.assoc_opt x gam with
-        | None -> raise Cannot_Apply_Tactic
-        | Some h -> 
-            let (m, gs') = aux a gam (Var x) h [] in
-            (m, (List.rev gs') @ gs)
+    | (env, ty)::gs ->
+        begin
+            try
+                let t = List.assoc x env in
+                aux t ty env gs
+            with Not_found -> raise Cannot_Apply_Tactic
         end
 
-let cut (t : ty) (gs : goal list) : (lam * goal list) = match gs with
+let cut (t : ty) (gs : goal list) : (lam * goal list) =
+    match gs with
     | [] -> raise No_Goals_Left
-    | (gam, a)::gs -> (Application (Hole, Hole), (gam, Arrow (t, a))::(gam, t)::gs)
+    | (env, ty)::gs -> 
+        let lam = Application (Hole, Hole)
+        and gs = (env, Arrow (t, ty)) :: (env, t) :: gs in 
+        (lam, gs)
 
 let exfalso (h : var) (gs : goal list) : (lam * goal list) = match gs with
     | [] -> raise No_Goals_Left
@@ -87,7 +95,7 @@ let absurd (t : ty) (gs : goal list) : (lam * goal list) = match gs with
 let admit (gs : goal list) : (lam * goal list) =
     match gs with
     | [] -> raise No_Goals_Left
-    | _::xs -> Hole, xs
+    | _::gs -> Hole, gs
 
 let admitted (gs : goal list) : (lam * goal list) =
     match gs with

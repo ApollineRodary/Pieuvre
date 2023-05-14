@@ -9,24 +9,22 @@
 %token AMP PERIOD
 %token <string> VAR
 %token <string> TYPEVAR
-%token ASSUMPTION EXACT INTRO INTROS APPLY CUT EXFALSO ELIM ABSURD ADMIT ADMITTED QED
+%token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS QED
 %token EOF
 
-%start <lam option> lterm_option
-%start <ty option> ptype_option
-%start <(lam * lam) option> alpha_request
-%start <(lam * ty) option> typecheck_request
-%start <ty option> property_request
-%start <tactic option> ptactic
+%start <lam> lterm_eof
+%start <ty> ptype_eof
+%start <lam * lam> alpha_request
+%start <lam * ty> typecheck_request
+%start <ty> property_request
+%start <tactic> ptactic
 %%
 
 (* Lambda terms *)
 
-lterm_option:
+lterm_eof:
     | lterm EOF
-        { Some $1 }
-    | EOF
-        { None }
+        { $1 }
 ;
 
 lterm:
@@ -56,11 +54,9 @@ simple_lterm:
 
 (* Types *)
 
-ptype_option:
+ptype_eof:
     | ptype EOF
-        { Some $1 }
-    | EOF
-        { None }
+        { $1 }
 ;
 
 ptype:
@@ -92,53 +88,48 @@ type_arrow:
 
 alpha_request:
     | lterm AMP lterm PERIOD
-        { Some ($1, $3) }
+        { $1, $3 }
 ;
 
 (* Request for pieuvre -typecheck *)
 
 typecheck_request:
     | lterm COLON ptype PERIOD
-        { Some ($1, $3) }
+        { $1, $3 }
 ;
 
 (* Request for property to prove *)
 
 property_request:
     | ptype PERIOD
-        { Some $1 }
+        { $1 }
 ;
 
 ptactic:
-    | tactic_contents PERIOD
-        { Some $1 }
-;
-
-tactic_contents:
-    | ASSUMPTION
-        { assumption }
-    | EXACT lterm
-        { exact $2 }
-    | INTRO VAR
-        { intro $2 }
-    | INTROS var_list
-        { intros $2 }
-    | APPLY VAR
-        { apply $2 }
-    | CUT ptype
-        { cut $2 }
-    | EXFALSO VAR
-        { exfalso $2 }
-    | ABSURD ptype
+    | ABSURD ptype PERIOD
         { absurd $2 }
-    | ELIM lterm
-        { elim $2 }
-    | ADMIT
+    | ADMIT PERIOD
         { admit }
-    | QED
-        { qed }
-    | ADMITTED
+    | ADMITTED PERIOD
         { admitted }
+    | ASSUMPTION PERIOD
+        { assumption }
+    | CUT ptype PERIOD
+        { cut $2 }
+    | ELIM lterm PERIOD
+        { elim $2 }
+    | EXACT lterm PERIOD
+        { exact $2 }
+    | EXFALSO VAR PERIOD
+        { exfalso $2 }
+    | INTRO VAR PERIOD
+        { intro $2 }
+    | INTROS var_list PERIOD
+        { intros $2 }
+    | APPLY VAR PERIOD
+        { apply $2 }
+    | QED PERIOD
+        { qed }
 ;
 
 var_list:
@@ -146,3 +137,4 @@ var_list:
         { [$1] }
     | VAR var_list
         { $1 :: $2 }
+;

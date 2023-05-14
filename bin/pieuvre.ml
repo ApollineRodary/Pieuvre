@@ -38,7 +38,8 @@ let start_proof () =
                 message := "";
                 Proof__Display.print_goals g;
                 print_lam l;
-                print_newline ()
+                print_newline ();
+                print_newline ();
             end;
             try
                 let tactic = Option.get (parse (Lexing.from_channel stdin) (Parsing__Parser.ptactic)) in
@@ -57,7 +58,7 @@ let start_proof () =
                     message := "Proven\n";
                     continue := false
                 end
-            | Invalid_argument _ -> message := "Parsing error :(\n"
+            | Invalid_argument e -> (*message := "Parsing error :(\n"*) raise (Invalid_argument e)
             ;
         done;
         
@@ -70,7 +71,7 @@ let start_proof () =
         begin if typecheck [] m prop then
             print_endline (string_of_lam m)
         else
-            print_endline "Failed to match lambda-term with the given lemma. This is expected if a goal was admitted."
+            print_endline "Failed to match lambda-term with the given lemma. This is expected if a goal was admitted, not so much otherwise."
         end
             
     end

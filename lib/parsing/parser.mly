@@ -9,7 +9,7 @@
 %token AMP PERIOD
 %token <string> VAR
 %token <string> TYPEVAR
-%token ASSUMPTION EXACT INTRO INTROS APPLY CUT ADMIT ADMITTED QED
+%token ASSUMPTION EXACT INTRO INTROS APPLY CUT EXFALSO ELIM ABSURD ADMIT ADMITTED QED
 %token EOF
 
 %start <lam option> lterm_option
@@ -127,6 +127,12 @@ tactic_contents:
         { apply $2 }
     | CUT ptype
         { cut $2 }
+    | EXFALSO VAR
+        { exfalso $2 }
+    | ABSURD ptype
+        { absurd $2 }
+    | ELIM lterm
+        { elim $2 }
     | ADMIT
         { admit }
     | QED

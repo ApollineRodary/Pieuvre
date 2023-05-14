@@ -30,6 +30,9 @@ rule tokenize = parse
     | "intros"      { INTROS }
     | "apply"       { APPLY }
     | "cut"         { CUT }
+    | "exfalso"     { EXFALSO }
+    | "elim"        { ELIM }
+    | "absurd"      { ABSURD }
     | "admit"       { ADMIT }
     | "Admitted"    { ADMITTED }
     | "Qed"         { QED }

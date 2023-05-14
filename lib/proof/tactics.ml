@@ -60,7 +60,29 @@ let apply (x : var) (gs : goal list) : (lam * goal list) =
 
 let cut (t : ty) (gs : goal list) : (lam * goal list) = match gs with
     | [] -> raise No_Goals_Left
-    | (gam, a)::gs -> (Application (Hole, Hole), (gam, Arrow(t, a))::(gam, t)::gs)
+    | (gam, a)::gs -> (Application (Hole, Hole), (gam, Arrow (t, a))::(gam, t)::gs)
+
+let exfalso (h : var) (gs : goal list) : (lam * goal list) = match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> begin
+        match List.assoc_opt h gam with
+        | None -> raise Cannot_Apply_Tactic
+        | Some False -> (Exf (Var h, a), gs)
+        | Some _ -> raise Cannot_Apply_Tactic
+    end
+
+let elim (m : lam) (gs : goal list) : (lam * goal list) = match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> begin
+        if typecheck gam m False then
+            (Exf (m, a), gs)
+        else
+            raise No_Goals_Left
+        end
+ 
+let absurd (t : ty) (gs : goal list) : (lam * goal list) = match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> (Exf(Application (Hole, Hole), a), (gam, Arrow (t, False))::(gam, t)::gs)
 
 let admit (gs : goal list) : (lam * goal list) =
     match gs with

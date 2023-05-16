@@ -17,6 +17,8 @@ rule tokenize = parse
     | "False"       { FALSE }
     | "->"          { ARR }
     | '~'           { TILDE }
+    | "/\\"         { AND }
+    | "\\/"         { OR }
 
     | '('           { LPAREN }
     | ')'           { RPAREN }

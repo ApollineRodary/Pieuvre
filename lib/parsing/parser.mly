@@ -4,7 +4,7 @@
 %}
 
 %token FUN MAPSTO EXF COLON
-%token TILDE ARR FALSE
+%token TILDE ARR FALSE AND OR
 %token LPAREN RPAREN
 %token AMP PERIOD
 %token <string> VAR
@@ -64,6 +64,8 @@ ptype:
         { $1 }
     | type_arrow
         { $1 }
+    | simple_type AND simple_type
+        { And ($1, $3) }
 ;
 
 simple_type:

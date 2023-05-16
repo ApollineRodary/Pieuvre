@@ -116,12 +116,12 @@ ptactic:
         { assumption }
     | CUT ptype PERIOD
         { cut $2 }
-    | ELIM lterm PERIOD
+    | ELIM VAR PERIOD
         { elim $2 }
     | EXACT lterm PERIOD
         { exact $2 }
-    | EXFALSO VAR PERIOD
-        { exfalso $2 }
+    | EXFALSO PERIOD
+        { exfalso }
     | INTRO VAR PERIOD
         { intro $2 }
     | INTROS var_list PERIOD

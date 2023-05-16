@@ -59,7 +59,7 @@ let cut (t : ty) (gs : goal list) : (lam * goal list) =
         and gs = (env, Arrow (t, ty)) :: (env, t) :: gs in 
         (lam, gs)
 
-let elim (m : lam) (gs : goal list) : (lam * goal list) =
+(* let elim (m : lam) (gs : goal list) : (lam * goal list) =
     match gs with
     | [] -> raise No_Goals_Left
     | (gam, a)::gs -> begin
@@ -67,7 +67,17 @@ let elim (m : lam) (gs : goal list) : (lam * goal list) =
             (Exf (m, a), gs)
         else
             raise No_Goals_Left
-        end
+        end *)
+
+let elim (h : var) (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> begin
+        match List.assoc_opt h gam with
+        | None -> raise Cannot_Apply_Tactic
+        | Some False -> (Exf (Var h, a), gs)
+        | Some _ -> raise Cannot_Apply_Tactic
+    end
 
 let exact (m : lam) (gs : goal list) : (lam * goal list) =
     match gs with
@@ -76,14 +86,10 @@ let exact (m : lam) (gs : goal list) : (lam * goal list) =
         if typecheck gam m a then (m, gs)
         else raise Cannot_Apply_Tactic
 
-let exfalso (h : var) (gs : goal list) : (lam * goal list) = match gs with
-| [] -> raise No_Goals_Left
-| (gam, a)::gs -> begin
-    match List.assoc_opt h gam with
-    | None -> raise Cannot_Apply_Tactic
-    | Some False -> (Exf (Var h, a), gs)
-    | Some _ -> raise Cannot_Apply_Tactic
-end
+
+let exfalso (gs : goal list) : (lam * goal list) = match gs with
+    | [] -> raise No_Goals_Left
+    | (gam, a)::gs -> (Exf (Hole, a), (gam, False)::gs)
 
 let intro (x : var) (gs : goal list) : (lam * goal list) =
     match gs with

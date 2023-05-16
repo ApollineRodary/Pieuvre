@@ -5,12 +5,15 @@
 
 %token FUN MAPSTO EXF COLON
 %token TILDE ARR FALSE AND OR
-%token LPAREN RPAREN
+%token LPAREN RPAREN COMMA
 %token AMP PERIOD
 %token <string> VAR
 %token <string> TYPEVAR
 %token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS QED
 %token EOF
+%left ARR
+%left AND
+%nonassoc UTILDE
 
 %start <lam> lterm_eof
 %start <ty> ptype_eof
@@ -36,6 +39,8 @@ lterm:
         { Abstraction (x, a, t) }
     | EXF LPAREN; t=lterm; COLON; a=ptype; RPAREN
         { Exf (t, a) }
+    | LPAREN; m=lterm; COMMA; n=lterm; RPAREN
+        { Couple (m, n) }
 ;
 
 application:
@@ -60,30 +65,18 @@ ptype_eof:
 ;
 
 ptype:
-    | simple_type
-        { $1 }
-    | type_arrow
-        { $1 }
-    | simple_type AND simple_type
-        { And ($1, $3) }
-;
-
-simple_type:
     | FALSE
         { False }
     | TYPEVAR
         { TypeVar $1 }
-    | TILDE simple_type
+    | TILDE ptype %prec UTILDE
         { Arrow ($2, False) }
+    | ptype AND ptype
+        { And ($1, $3) }
+    | ptype ARR ptype
+        { Arrow ($1, $3) }
     | LPAREN ptype RPAREN
         { $2 }
-;
-
-type_arrow:
-    | simple_type ARR type_arrow
-        { Arrow ($1, $3) }
-    | simple_type ARR simple_type
-        { Arrow ($1, $3) }
 ;
 
 (* Request for pieuvre -alpha *)

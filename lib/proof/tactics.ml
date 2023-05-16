@@ -59,24 +59,20 @@ let cut (t : ty) (gs : goal list) : (lam * goal list) =
         and gs = (env, Arrow (t, ty)) :: (env, t) :: gs in 
         (lam, gs)
 
-(* let elim (m : lam) (gs : goal list) : (lam * goal list) =
+let elim (x : var) (gs : goal list) : (lam * goal list) =
     match gs with
     | [] -> raise No_Goals_Left
-    | (gam, a)::gs -> begin
-        if typecheck gam m False then
-            (Exf (m, a), gs)
-        else
-            raise No_Goals_Left
-        end *)
-
-let elim (h : var) (gs : goal list) : (lam * goal list) =
-    match gs with
-    | [] -> raise No_Goals_Left
-    | (gam, a)::gs -> begin
-        match List.assoc_opt h gam with
-        | None -> raise Cannot_Apply_Tactic
-        | Some False -> (Exf (Var h, a), gs)
-        | Some _ -> raise Cannot_Apply_Tactic
+    | (env, ty)::gs -> begin
+        try
+            match List.assoc x env with 
+            | False -> (Exf (Var x, ty), gs)
+            | And (a, b) ->
+                let abst = Abstraction (x, a, Abstraction (x, b, Hole)) in
+                let appl = Application (Application (abst, Fst (Var x)), Snd (Var x)) in
+                let ty = Arrow (a, Arrow (b, ty)) in
+                appl, (env, ty)::gs
+            | _ -> raise Cannot_Apply_Tactic
+        with Not_found -> raise Cannot_Apply_Tactic
     end
 
 let exact (m : lam) (gs : goal list) : (lam * goal list) =
@@ -107,6 +103,20 @@ let intros (l : var list) (gs : goal list) : (lam * goal list) =
             let (n, gs) = intro x gs in
             aux xs gs (Option.get (fill m n))
     in aux l gs Hole
+
+let split (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (env, ty)::gs ->
+        begin
+            match ty with
+            | And (a, b) ->
+                let a_goal = (env, a)
+                and b_goal = (env, b)
+                and lam = Couple (Hole, Hole) in
+                (lam, a_goal::b_goal::gs)
+            | _ -> raise Cannot_Apply_Tactic
+        end
 
 let qed (gs : goal list) : (lam * goal list) =
     match gs with

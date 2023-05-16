@@ -5,6 +5,7 @@ type ty =
     | Arrow of ty * ty
     | False
     | And of ty * ty
+    | True
 
 type lam =
     | Abstraction of var * ty * lam
@@ -15,5 +16,6 @@ type lam =
     | Couple of lam * lam
     | Fst of lam
     | Snd of lam
+    | Unit
 
 type env = (var*ty) list

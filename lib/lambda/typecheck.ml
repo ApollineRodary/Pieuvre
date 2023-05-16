@@ -32,5 +32,7 @@ let rec typecheck (gam : env) (m : lam) (t : ty) : bool = match m, t with
             | Some (And (_, t2)) -> t2 = t
             | _ -> false
         end
+    
+    | Unit, True -> true
 
     | _ -> false

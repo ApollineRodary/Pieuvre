@@ -39,3 +39,4 @@ let rec infer_type (gam : env) (m : lam) : ty option =
             | Some (And (_, t2)) -> Some t2
             | _ -> None
         end
+    | Unit -> Some True

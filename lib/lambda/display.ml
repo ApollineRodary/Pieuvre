@@ -16,8 +16,9 @@ let string_of_type (t:ty): string =
               (if p then "(" else "")
             ^ aux t1 true
             ^ " /\\ "
-            ^ aux t2 false
+            ^ aux t2 true
             ^ (if p then ")" else "")
+        | True -> "True"
     in aux t false
 
 let print_type (t:ty): unit = print_string (string_of_type t)
@@ -63,6 +64,7 @@ let string_of_lam (l:lam): string =
             "snd ("
             ^ aux m false
             ^ ")"
+        | Unit -> "I"
     in aux l false
 
 let print_lam (l:lam): unit = print_string (string_of_lam l)

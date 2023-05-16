@@ -4,9 +4,10 @@
 %}
 
 %token FUN MAPSTO EXF COLON
-%token TILDE ARR FALSE AND OR
+%token TILDE ARR FALSE AND OR TRUE
 %token LPAREN RPAREN COMMA
 %token AMP PERIOD
+%token UNIT
 %token <string> VAR
 %token <string> TYPEVAR
 %token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS QED
@@ -41,6 +42,8 @@ lterm:
         { Exf (t, a) }
     | LPAREN; m=lterm; COMMA; n=lterm; RPAREN
         { Couple (m, n) }
+    | UNIT
+        { Unit }
 ;
 
 application:
@@ -67,6 +70,8 @@ ptype_eof:
 ptype:
     | FALSE
         { False }
+    | TRUE
+        { True }
     | TYPEVAR
         { TypeVar $1 }
     | TILDE ptype %prec UTILDE

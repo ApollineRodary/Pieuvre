@@ -14,6 +14,7 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
         | Couple (m, n) -> Couple (aux b m x x', aux b n x x')
         | Fst m -> Fst (aux b m x x')
         | Snd m -> Snd (aux b m x x')
+        | Unit -> Unit
     in aux false m x x'
 
 let get_suffix_number (x : var) (y : var) : int option =
@@ -66,6 +67,7 @@ let find_fresh_variable (x : var) (m : lam) : var =
             end
         | Fst m -> aux i x m
         | Snd m -> aux i x m
+        | Unit -> "h"
     in aux 0 x m
 
 let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
@@ -85,4 +87,5 @@ let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
     | (Couple (m1, n1), Couple (m2, n2)) -> (is_alpha_convertible m1 n1) && (is_alpha_convertible m2 n2)
     | Fst m, Fst n -> is_alpha_convertible m n
     | Snd m, Snd n -> is_alpha_convertible m n
+    | Unit, Unit -> true
     | _ -> false

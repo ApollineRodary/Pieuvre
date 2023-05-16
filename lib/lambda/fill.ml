@@ -44,5 +44,6 @@ let fill (m : lam) (n : lam) : lam option =
                 | Some m' -> Some (Snd m')
                 | None -> None
             end
+        | Unit -> None
 
     in aux m n

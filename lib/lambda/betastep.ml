@@ -25,6 +25,7 @@ let rec subst (m : lam) (x : var) (n : lam) : lam =
     | Couple (m1, m2) -> Couple (subst m1 x n, subst m2 x n)
     | Fst m -> Fst (subst m x n)
     | Snd m -> Snd (subst m x n)
+    | Unit -> Unit
 
 let rec get_free_variables (m : lam) : var list =
     (*Returns free variables used in m*)
@@ -47,6 +48,7 @@ let rec get_free_variables (m : lam) : var list =
     | Couple (m1, m2) -> (get_free_variables m1) @ (get_free_variables m2)
     | Fst m -> get_free_variables m
     | Snd m -> get_free_variables m
+    | Unit -> []
 
 let rec betastep (m : lam) : lam option =
     match m with
@@ -99,3 +101,4 @@ let rec betastep (m : lam) : lam option =
     | Fst _ -> None
     | Snd (Couple (_, n)) ->  Some n
     | Snd _ -> None
+    | Unit -> None

@@ -15,6 +15,7 @@ rule tokenize = parse
     | ':'           { COLON }
 
     | "False"       { FALSE }
+    | "True"        { TRUE }
     | "->"          { ARR }
     | '~'           { TILDE }
     | "/\\"         { AND }
@@ -41,6 +42,8 @@ rule tokenize = parse
     | "admit"       { ADMIT }
     | "Admitted"    { ADMITTED }
     | "Qed"         { QED }
+
+    | "I"           { UNIT }
 
     | id            { VAR (Lexing.lexeme lexbuf) }
     | typeid        { TYPEVAR (Lexing.lexeme lexbuf) }

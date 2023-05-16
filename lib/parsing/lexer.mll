@@ -25,6 +25,12 @@ rule tokenize = parse
     | ')'           { RPAREN }
     | ','           { COMMA }
 
+    | "fst"         { FST }
+    | "snd"         { SND }
+    | "ig"          { IG }
+    | "id"          { ID }
+    | "case"        { CASE }
+
     | '.'           { PERIOD }
     | '&'           { AMP }
 

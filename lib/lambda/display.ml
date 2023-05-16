@@ -19,6 +19,12 @@ let string_of_type (t:ty): string =
             ^ aux t2 true
             ^ (if p then ")" else "")
         | True -> "True"
+        | Or (t1, t2) ->
+            (if p then "(" else "")
+          ^ aux t1 true
+          ^ " \\/ "
+          ^ aux t2 true
+          ^ (if p then ")" else "")
     in aux t false
 
 let print_type (t:ty): unit = print_string (string_of_type t)
@@ -65,6 +71,26 @@ let string_of_lam (l:lam): string =
             ^ aux m false
             ^ ")"
         | Unit -> "I"
+        | Ig (m, t) ->
+            "ig ("
+          ^ aux m false
+          ^ ","
+          ^ string_of_type t
+          ^ ")"
+        | Id (m, t) ->
+            "id ("
+          ^ aux m false
+          ^ ","
+          ^ string_of_type t
+          ^ ")"
+        | Case (m, n, n') ->
+              "case ("
+            ^ aux m false
+            ^ ","
+            ^ aux n false
+            ^ ","
+            ^ aux n' false
+            ^ ")"
     in aux l false
 
 let print_lam (l:lam): unit = print_string (string_of_lam l)

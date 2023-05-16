@@ -3,7 +3,7 @@
     open Proof
 %}
 
-%token FUN MAPSTO EXF COLON
+%token FUN MAPSTO EXF COLON FST SND IG ID CASE
 %token TILDE ARR FALSE AND OR TRUE
 %token LPAREN RPAREN COMMA
 %token AMP PERIOD
@@ -13,7 +13,7 @@
 %token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS QED
 %token EOF
 %left ARR
-%left AND
+%left AND OR
 %nonassoc UTILDE
 
 %start <lam> lterm_eof
@@ -44,6 +44,16 @@ lterm:
         { Couple (m, n) }
     | UNIT
         { Unit }
+    | FST LPAREN; t=lterm; RPAREN
+        { Fst t }
+    | SND LPAREN; t=lterm; RPAREN
+        { Snd t }
+    | IG LPAREN; t=lterm; COMMA; a=ptype; RPAREN
+        { Ig (t, a) }
+    | ID LPAREN; t=lterm; COMMA; a=ptype; RPAREN
+        { Id (t, a) }
+    | CASE LPAREN; m=lterm ; COMMA; n=lterm ; COMMA; o=lterm; RPAREN
+        { Case (m, n, o) }
 ;
 
 application:
@@ -78,6 +88,8 @@ ptype:
         { Arrow ($2, False) }
     | ptype AND ptype
         { And ($1, $3) }
+    | ptype OR ptype
+        { Or ($1, $3) }
     | ptype ARR ptype
         { Arrow ($1, $3) }
     | LPAREN ptype RPAREN

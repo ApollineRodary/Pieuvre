@@ -15,6 +15,9 @@ let alpha_convert_fixed (m : lam) (x : var) (x' : var) : lam =
         | Fst m -> Fst (aux b m x x')
         | Snd m -> Snd (aux b m x x')
         | Unit -> Unit
+        | Ig (m, t) -> Ig (aux b m x x', t)
+        | Id (m, t) -> Id (aux b m x x', t)
+        | Case (m, n, n') -> Case (aux b m x x', aux b n x x', aux b n' x x')
     in aux false m x x'
 
 let get_suffix_number (x : var) (y : var) : int option =
@@ -68,6 +71,23 @@ let find_fresh_variable (x : var) (m : lam) : var =
         | Fst m -> aux i x m
         | Snd m -> aux i x m
         | Unit -> "h"
+        | Ig (m, _) -> aux i x m
+        | Id (m, _) ->  aux i x m
+        | Case (m, n, n') -> 
+            begin
+                let x1 = aux i x m in
+                let x2 = aux i x n in
+                let x3 = aux i x n' in
+                match (get_suffix_number x x1, get_suffix_number x x2, get_suffix_number x x3) with
+                | Some i1, Some i2, Some i3 -> x ^ string_of_int (max (max i1 i2) i3)
+                | Some i1, Some i2, None -> x ^ string_of_int (max i1 i2)
+                | Some i1, None, Some i3 -> x ^ string_of_int (max i1 i3)
+                | None, Some i2, Some i3 -> x ^ string_of_int (max i2 i3)
+                | Some i1, None, None -> x ^ string_of_int i1
+                | None, Some i2, None -> x ^ string_of_int i2
+                | None, None, Some i3 -> x ^ string_of_int i3
+                | _ -> x
+            end
     in aux 0 x m
 
 let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
@@ -88,4 +108,7 @@ let rec is_alpha_convertible (m : lam) (n : lam) : bool = match (m, n) with
     | Fst m, Fst n -> is_alpha_convertible m n
     | Snd m, Snd n -> is_alpha_convertible m n
     | Unit, Unit -> true
+    | Ig (m, _), Ig (n, _) -> is_alpha_convertible m n
+    | Id (m, _), Id (n, _) -> is_alpha_convertible m n
+    | Case (m1, n1, n1'), Case (m2, n2, n2') -> is_alpha_convertible m1 m2 && is_alpha_convertible n1 n2 && is_alpha_convertible n1' n2'
     | _ -> false

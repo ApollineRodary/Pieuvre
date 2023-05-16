@@ -26,6 +26,9 @@ let rec subst (m : lam) (x : var) (n : lam) : lam =
     | Fst m -> Fst (subst m x n)
     | Snd m -> Snd (subst m x n)
     | Unit -> Unit
+    | Ig (m, t) -> Ig (subst m x n, t)
+    | Id (m, t) -> Id (subst m x n, t)
+    | Case (m, m1, m2) -> Case (subst m x n, subst m1 x n, subst m2 x n)
 
 let rec get_free_variables (m : lam) : var list =
     (*Returns free variables used in m*)
@@ -49,6 +52,9 @@ let rec get_free_variables (m : lam) : var list =
     | Fst m -> get_free_variables m
     | Snd m -> get_free_variables m
     | Unit -> []
+    | Ig (m, _) -> get_free_variables m
+    | Id (m, _) -> get_free_variables m
+    | Case (m, n, n') -> (get_free_variables m) @ (get_free_variables n) @ (get_free_variables n')
 
 let rec betastep (m : lam) : lam option =
     match m with
@@ -102,3 +108,18 @@ let rec betastep (m : lam) : lam option =
     | Snd (Couple (_, n)) ->  Some n
     | Snd _ -> None
     | Unit -> None
+    | Ig (m, t) ->
+        begin 
+            match betastep m with
+            | Some m' -> Some (Ig (m', t))
+            | None -> None
+        end
+    | Id (m, t) ->
+        begin 
+            match betastep m with
+            | Some m' -> Some (Id (m', t))
+            | None -> None
+        end
+    | Case (Ig (m, _), n, _) -> Some (Application (n, m))
+    | Case (Id (m, _), _, n') -> Some (Application (n', m))
+    | Case _ -> None

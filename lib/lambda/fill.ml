@@ -45,5 +45,25 @@ let fill (m : lam) (n : lam) : lam option =
                 | None -> None
             end
         | Unit -> None
+        | Ig (m, t) ->
+            begin
+                match aux m n with
+                | Some m -> Some (Ig (m, t))
+                | None -> None
+            end
+        | Id (m, t) ->
+            begin
+                match aux m n with
+                | Some m -> Some (Id (m, t))
+                | None -> None
+            end
+        | Case (m, m1, m2) ->
+            begin
+                match aux m n, aux m1 n, aux m2 n with
+                | Some m', _, _ -> Some (Case (m', m1, m2))
+                | None, Some m1', _ -> Some (Case (m, m1', m2))
+                | None, None, Some m2' -> Some (Case (m, m1, m2'))
+                | _ -> None
+            end
 
     in aux m n

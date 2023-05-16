@@ -40,3 +40,21 @@ let rec infer_type (gam : env) (m : lam) : ty option =
             | _ -> None
         end
     | Unit -> Some True
+    | Ig (m, b) -> 
+        begin
+            match infer_type gam m with
+            | Some a -> Some (Or (a, b))
+            | None -> None
+        end
+    | Id (m, a) -> 
+        begin
+            match infer_type gam m with
+            | Some b -> Some (Or (a, b))
+            | None -> None
+        end
+    | Case (m, n, n') ->
+        begin
+            match infer_type gam m, infer_type gam n, infer_type gam n' with
+            | Some (Or (a, b)), Some (Arrow (a', c)), Some (Arrow (b', c')) when (a=a' && b=b' && c=c') -> Some c
+            | _ -> None
+        end

@@ -13,5 +13,6 @@ let exfalso = Tactics.exfalso
 let elim = Tactics.elim
 let absurd = Tactics.absurd
 let admit = Tactics.admit
+let split = Tactics.split
 let qed = Tactics.qed
 let admitted = Tactics.admitted

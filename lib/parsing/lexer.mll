@@ -34,19 +34,18 @@ rule tokenize = parse
     | '.'           { PERIOD }
     | '&'           { AMP }
 
-    | "apply"       { APPLY }
-    | "assumption"  { ASSUMPTION }
-    | "cut"         { CUT }
-    | "exact"       { EXACT }
-    | "intro"       { INTRO }
-    | "intros"      { INTROS }
-    | "apply"       { APPLY }
-    | "cut"         { CUT }
-    | "exfalso"     { EXFALSO }
-    | "elim"        { ELIM }
     | "absurd"      { ABSURD }
     | "admit"       { ADMIT }
     | "Admitted"    { ADMITTED }
+    | "apply"       { APPLY }
+    | "assumption"  { ASSUMPTION }
+    | "cut"         { CUT }
+    | "elim"        { ELIM }
+    | "exact"       { EXACT }
+    | "exfalso"     { EXFALSO }
+    | "intro"       { INTRO }
+    | "intros"      { INTROS }
+    | "split"       { SPLIT }
     | "Qed"         { QED }
 
     | "I"           { UNIT }

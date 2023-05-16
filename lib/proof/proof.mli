@@ -14,4 +14,5 @@ val elim : Lambda.var -> goal list -> Lambda.lam * goal list
 val absurd : Lambda.ty -> goal list -> Lambda.lam * goal list
 val admit : (goal list) -> (Lambda.lam * goal list)
 val qed : (goal list) -> (Lambda.lam * goal list)
+val split : (goal list) -> (Lambda.lam * goal list)
 val admitted : (goal list) -> (Lambda.lam * goal list)

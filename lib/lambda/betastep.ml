@@ -16,14 +16,15 @@ let rec subst (m : lam) (x : var) (n : lam) : lam =
     match m with
     | Application (m1, m2) -> Application (subst m1 x n, subst m2 x n)
     | Abstraction (y, t, m') ->
-        if y = x then begin
-            print_endline "Problem in alpha-conversion: need to substitute a variable that is in abstraction"; 
-            m
-        end else
-            Abstraction (y, t, subst m' x n)
+        if y = x then m
+        else Abstraction (y, t, subst m' x n)
     | Var y -> if y = x then n else m
     | Exf (m', t) -> Exf (subst m' x n, t)
-    | Hole -> failwith "Substition in lambda term with hole(s)"
+    | Hole -> failwith "Tried to apply subst to a lambda term with holes. I don't know what to do with that."
+
+    | Couple (m1, m2) -> Couple (subst m1 x n, subst m2 x n)
+    | Fst m -> Fst (subst m x n)
+    | Snd m -> Snd (subst m x n)
 
 let rec get_free_variables (m : lam) : var list =
     (*Returns free variables used in m*)
@@ -31,7 +32,8 @@ let rec get_free_variables (m : lam) : var list =
     | Application (m1, m2) -> (get_free_variables m1) @ (get_free_variables m2)
     | Abstraction (x, _, m) ->
         begin
-            let rec del_t l = match l with
+            let rec del_t l = 
+                match l with
                 | [] -> []
                 | t::ts when t = x -> del_t ts
                 | t::ts -> t::(del_t ts)
@@ -40,7 +42,11 @@ let rec get_free_variables (m : lam) : var list =
         end
     | Var y -> [y]
     | Exf (m, _) -> get_free_variables m
-    | Hole -> failwith "Try to get free variables in lambda term with hole(s)"
+    | Hole -> failwith "Tried to apply get_free_variables to a lambda term with holes. I don't know what to do with that."
+
+    | Couple (m1, m2) -> (get_free_variables m1) @ (get_free_variables m2)
+    | Fst m -> get_free_variables m
+    | Snd m -> get_free_variables m
 
 let rec betastep (m : lam) : lam option =
     match m with
@@ -75,9 +81,19 @@ let rec betastep (m : lam) : lam option =
     | Exf (m, t) ->
         begin
             match betastep m with
-                | Some m' -> Some (Exf (m', t))
-                | None -> None
+            | Some m' -> Some (Exf (m', t))
+            | None -> None
         end
     
-    | Hole -> failwith "Try to reduce a lambda term with hole(s)"
+    | Hole -> failwith "Tried to apply reduce to a lambda term with holes. I don't know what to do with that."
     
+    | Couple (m, n) -> 
+        begin
+            match betaspep m, betastep n with
+            | (Some m', _) -> Some (Couple (m', n))
+            | (None, Some n') -> Some (Couple (m, n'))
+            | _ -> None
+        end
+    
+    | Fst (Couple (m, _)) -> Some m
+    | Snd (Couple (_, n)) ->  Some n

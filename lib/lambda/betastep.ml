@@ -89,11 +89,13 @@ let rec betastep (m : lam) : lam option =
     
     | Couple (m, n) -> 
         begin
-            match betaspep m, betastep n with
+            match betastep m, betastep n with
             | (Some m', _) -> Some (Couple (m', n))
             | (None, Some n') -> Some (Couple (m, n'))
             | _ -> None
         end
     
     | Fst (Couple (m, _)) -> Some m
+    | Fst _ -> None
     | Snd (Couple (_, n)) ->  Some n
+    | Snd _ -> None

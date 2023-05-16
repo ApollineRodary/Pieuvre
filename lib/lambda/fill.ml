@@ -25,4 +25,24 @@ let fill (m : lam) (n : lam) : lam option =
                 | None -> None
             end
         | Hole -> Some n
+        | Couple (m1, m2) -> 
+            begin 
+                match (aux m1 n, aux m2 n) with
+                | Some m1', _ -> Some (Couple (m1', m2))
+                | None, Some m2' -> Some (Couple (m1, m2'))
+                | None, None -> None
+            end
+        | Fst m -> 
+            begin
+                match aux m n with
+                | Some m' -> Some (Fst m')
+                | None -> None
+            end
+        | Snd m -> 
+            begin
+                match aux m n with
+                | Some m' -> Some (Snd m')
+                | None -> None
+            end
+
     in aux m n

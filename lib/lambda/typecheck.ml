@@ -19,4 +19,18 @@ let rec typecheck (gam : env) (m : lam) (t : ty) : bool = match m, t with
     
     | Exf (m, t'), _ -> (typecheck gam m False) && (t' = t)
     | Hole, _ -> failwith "Try to typecheck a lambda term with hole(s)"
+    | Couple (m, n), And (t1, t2) -> (typecheck gam m t1) && (typecheck gam n t2)
+    | Fst m, t -> 
+        begin
+            match (infer_type gam m) with
+            | Some (And (t1, _)) -> t1 = t
+            | _ -> false
+        end
+    | Snd m, t -> 
+        begin
+            match (infer_type gam m) with
+            | Some (And (_, t2)) -> t2 = t
+            | _ -> false
+        end
+
     | _ -> false

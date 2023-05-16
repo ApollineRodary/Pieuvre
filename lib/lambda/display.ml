@@ -12,6 +12,12 @@ let string_of_type (t:ty): string =
             ^ (if p then ")" else "")
         | TypeVar x -> x
         | False -> "False"
+        | And (t1, t2) ->
+              (if p then "(" else "")
+            ^ aux t1 true
+            ^ " /\\ "
+            ^ aux t2 false
+            ^ (if p then ")" else "")
     in aux t false
 
 let print_type (t:ty): unit = print_string (string_of_type t)
@@ -43,6 +49,20 @@ let string_of_lam (l:lam): string =
             ^ string_of_type t
             ^ ")"
         | Hole -> " ? "
+        | Couple (m, n) ->
+              "("
+            ^ aux m false
+            ^ ","
+            ^ aux n false
+            ^ ")"
+        | Fst m -> 
+              "fst ("
+            ^ aux m false
+            ^ ")"
+        | Snd m -> 
+            "snd ("
+            ^ aux m false
+            ^ ")"
     in aux l false
 
 let print_lam (l:lam): unit = print_string (string_of_lam l)

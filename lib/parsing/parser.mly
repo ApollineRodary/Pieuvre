@@ -10,7 +10,7 @@
 %token UNIT
 %token <string> VAR
 %token <string> TYPEVAR
-%token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS SPLIT QED
+%token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS LEFT RIGHT SPLIT QED
 %token EOF
 %right ARR
 %left AND OR
@@ -140,6 +140,10 @@ ptactic:
         { intro $2 }
     | INTROS var_list PERIOD
         { intros $2 }
+    | LEFT PERIOD
+        { left }
+    | RIGHT PERIOD
+        { right }
     | SPLIT PERIOD
         { split }
     | QED PERIOD

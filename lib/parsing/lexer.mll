@@ -45,6 +45,8 @@ rule tokenize = parse
     | "exfalso"     { EXFALSO }
     | "intro"       { INTRO }
     | "intros"      { INTROS }
+    | "left"        { LEFT }
+    | "right"       { RIGHT }
     | "split"       { SPLIT }
     | "Qed"         { QED }
 

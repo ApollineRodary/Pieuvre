@@ -3,16 +3,18 @@ include Types
 let proof_start (a : Lambda.ty) : proof = (Hole, [([], a)])
 let use_tactic = Tactics.use_tactic
 
-let exact = Tactics.exact
-let assumption = Tactics.assumption
-let intro = Tactics.intro
-let intros = Tactics.intros
-let apply = Tactics.apply
-let cut = Tactics.cut
-let exfalso = Tactics.exfalso
-let elim = Tactics.elim
 let absurd = Tactics.absurd
 let admit = Tactics.admit
+let apply = Tactics.apply
+let assumption = Tactics.assumption
+let cut = Tactics.cut
+let elim = Tactics.elim
+let exact = Tactics.exact
+let exfalso = Tactics.exfalso
+let intro = Tactics.intro
+let intros = Tactics.intros
+let left = Tactics.left
+let right = Tactics.right
 let split = Tactics.split
 let qed = Tactics.qed
 let admitted = Tactics.admitted

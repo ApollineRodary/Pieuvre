@@ -71,6 +71,11 @@ let elim (x : var) (gs : goal list) : (lam * goal list) =
                 let appl = Application (Application (abst, Fst (Var x)), Snd (Var x)) in
                 let ty = Arrow (a, Arrow (b, ty)) in
                 appl, (env, ty)::gs
+            | Or (a, b) ->
+                let lam = Case (Var x, Hole, Hole)
+                and goal_a = (env, Arrow (a, ty))
+                and goal_b = (env, Arrow (b, ty)) in
+                (lam, goal_a::goal_b::gs)
             | _ -> raise Cannot_Apply_Tactic
         with Not_found -> raise Cannot_Apply_Tactic
     end
@@ -103,6 +108,32 @@ let intros (l : var list) (gs : goal list) : (lam * goal list) =
             let (n, gs) = intro x gs in
             aux xs gs (Option.get (fill m n))
     in aux l gs Hole
+
+let left (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (env, ty)::gs ->
+        begin
+            match ty with
+            | Or (a, b) ->
+                let goal = env, a
+                and lam = Ig (Hole, b) in
+                (lam, goal::gs)
+            | _ -> raise Cannot_Apply_Tactic
+        end
+
+let right (gs : goal list) : (lam * goal list) =
+    match gs with
+    | [] -> raise No_Goals_Left
+    | (env, ty)::gs ->
+        begin
+            match ty with
+            | Or (a, b) ->
+                let goal = env, b
+                and lam = Id (Hole, a) in
+                (lam, goal::gs)
+            | _ -> raise Cannot_Apply_Tactic
+        end
 
 let split (gs : goal list) : (lam * goal list) =
     match gs with

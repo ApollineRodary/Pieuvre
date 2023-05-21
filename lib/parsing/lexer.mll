@@ -36,7 +36,6 @@ rule tokenize = parse
 
     | "absurd"      { ABSURD }
     | "admit"       { ADMIT }
-    | "Admitted"    { ADMITTED }
     | "apply"       { APPLY }
     | "assumption"  { ASSUMPTION }
     | "cut"         { CUT }
@@ -48,7 +47,10 @@ rule tokenize = parse
     | "left"        { LEFT }
     | "right"       { RIGHT }
     | "split"       { SPLIT }
+
+    | "Admitted"    { ADMITTED }
     | "Qed"         { QED }
+    | "Print"       { PRINT }
 
     | "I"           { UNIT }
 

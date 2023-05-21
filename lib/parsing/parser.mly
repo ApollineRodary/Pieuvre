@@ -10,7 +10,8 @@
 %token UNIT
 %token <string> VAR
 %token <string> TYPEVAR
-%token ABSURD ADMIT ADMITTED APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS LEFT RIGHT SPLIT QED
+%token ADMITTED QED PRINT
+%token ABSURD ADMIT APPLY ASSUMPTION CUT ELIM EXACT EXFALSO INTRO INTROS LEFT RIGHT SPLIT
 %token EOF
 %right ARR
 %left AND OR
@@ -21,7 +22,7 @@
 %start <lam * lam> alpha_request
 %start <lam * ty> typecheck_request
 %start <ty> property_request
-%start <tactic> ptactic
+%start <command> command
 %%
 
 (* Lambda terms *)
@@ -117,37 +118,44 @@ property_request:
         { $1 }
 ;
 
-ptactic:
-    | ABSURD ptype PERIOD
-        { absurd $2 }
-    | ADMIT PERIOD
-        { admit }
+command:
+    | ptactic PERIOD
+        { UseTactic $1 }
     | ADMITTED PERIOD
-        { admitted }
-    | APPLY VAR PERIOD
-        { apply $2 }
-    | ASSUMPTION PERIOD
-        { assumption }
-    | CUT ptype PERIOD
-        { cut $2 }
-    | ELIM VAR PERIOD
-        { elim $2 }
-    | EXACT lterm PERIOD
-        { exact $2 }
-    | EXFALSO PERIOD
-        { exfalso }
-    | INTRO VAR PERIOD
-        { intro $2 }
-    | INTROS var_list PERIOD
-        { intros $2 }
-    | LEFT PERIOD
-        { left }
-    | RIGHT PERIOD
-        { right }
-    | SPLIT PERIOD
-        { split }
+        { Admitted }
     | QED PERIOD
-        { qed }
+        { Qed }
+    | PRINT PERIOD
+        { Print }
+;
+
+ptactic:
+    | ABSURD ptype
+        { absurd $2 }
+    | ADMIT
+        { admit }
+    | APPLY VAR
+        { apply $2 }
+    | ASSUMPTION
+        { assumption }
+    | CUT ptype
+        { cut $2 }
+    | ELIM VAR
+        { elim $2 }
+    | EXACT lterm
+        { exact $2 }
+    | EXFALSO
+        { exfalso }
+    | INTRO VAR
+        { intro $2 }
+    | INTROS var_list
+        { intros $2 }
+    | LEFT
+        { left }
+    | RIGHT
+        { right }
+    | SPLIT
+        { split }
 ;
 
 var_list:

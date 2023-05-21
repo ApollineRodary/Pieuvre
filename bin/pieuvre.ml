@@ -47,5 +47,5 @@ let () = begin
     | Alpha -> alpha_mode ()
     | Reduce -> reduce_mode ()
     | Typecheck -> typecheck_mode ()
-    | InteractiveSession -> start_proof ()
+    | InteractiveSession -> start_proof (Lexing.from_channel (get_channel filename))
 end

@@ -2,61 +2,90 @@ open Parsing
 open Lambda
 open Proof
 
-let read_prop () =
-    let request = parse (Lexing.from_channel stdin) (Parsing__Parser.property_request) in
+let clear () = ignore (Sys.command "clear")
+
+(* Warnings, error messages and status messages *)
+let could_not_apply_tactic = "\x1B[31mCould not apply tactic\x1B[39m\n\n"
+let incomplete_proof = "\x1B[31mThere are still subgoals to prove\x1B[39m\n\n"
+let no_goals = "\x1B[31mThere are no subgoals to apply this tactic on\x1B[39m\n\n"
+let admitted = "\x1B[33mAdmitted\x1B[39m\n\n"
+let successfully_proven = "\x1B[32mSuccessfully proven\x1B[39m\n\n"
+let typecheck_failure = "\x1B[33mFailed to match lambda-term with the given lemma. This is expected if a goal was admitted, not so much otherwise.\x1B[31m"
+
+let read_prop (lexbuf : Lexing.lexbuf) =
+    let request = parse lexbuf (Parsing__Parser.property_request) in
     Option.get request
 
-let read_and_apply_tactic (proof_state : (proof ref * string ref * bool ref)) =
-    let proof, message, continue = proof_state in
-    let (l, g) = !proof in begin
-        message := "";
-        Proof__Display.print_goals g;
-        print_lam l;
-        print_newline ();
-        print_newline ();
-    end;
-    try
-        let tactic = Option.get (parse (Lexing.from_channel stdin) (Parsing__Parser.ptactic)) in
-        proof := use_tactic tactic !proof
-    with
-    | Cannot_Apply_Tactic -> message := "\x1B[31mCould not apply tactic\x1B[39m\n\n"
-    | Incomplete_Proof -> message := "\x1B[31mThere are still subgoals to prove\x1B[39m\n\n"
-    | No_Goals_Left -> message := "\x1B[31mThere are no subgoals to apply this tactic on\x1B[39m\n\n"
-    | Proof_Admitted ->
+let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool ref) =
+    Proof__Display.print_goals (snd !proof);
+    print_newline ();
+    print_newline ();
+
+    let command = Option.get (parse lexbuf (Parsing__Parser.command)) in
+    match command with
+    | UseTactic t ->
         begin
-            message := "\x1B[33mAdmitted\x1B[39m\n\n";
-            continue := false
-        end
-    | Proven ->
-        begin
-            message := "\x1B[32mSuccessfully proven\x1B[39m\n\n";
-            continue := false
+            clear ();
+            try proof := use_tactic t !proof
+            with
+            | Cannot_Apply_Tactic -> print_string could_not_apply_tactic
+            | No_Goals_Left -> print_string no_goals
         end
 
-let start_proof () =
-    ignore (Sys.command "clear");
+    | Admitted ->
+        let goals = snd !proof in
+        begin
+            clear ();
+            match goals with
+            | [] -> 
+                begin
+                    print_string admitted;
+                    continue := false
+                end
+            | _ -> print_string incomplete_proof
+        end
 
-    let prop = read_prop () in
+    | Qed ->
+        let goals = snd !proof in
+        begin
+            clear ();
+            match goals with
+            | [] -> 
+                begin
+                    print_string successfully_proven;
+                    continue := false
+                end
+            | _ -> print_string incomplete_proof
+        end
+    
+    | Print ->
+        begin
+            clear ();
+            print_lam (fst !proof)
+        end
+
+let start_proof (lexbuf : Lexing.lexbuf) =
+    clear ();
+
+    let prop = read_prop lexbuf in
     let proof = ref (proof_start prop)
     and message = ref ""
     and continue = ref true in
-    let proof_state = (proof, message, continue) in
     begin   
-        while (!continue) do
-            ignore (Sys.command "clear");
-            print_string !message;
-            read_and_apply_tactic proof_state
+        while (!continue) do read_commands lexbuf proof continue
         done;
         
-        ignore (Sys.command "clear");
+        clear ();
         print_type prop;
         print_newline ();
         print_string !message;
 
-        let m = normal (fst !proof) in
-        begin if typecheck [] m prop then
-            print_endline (string_of_lam m)
-        else
-            print_endline "\x1B[33mFailed to match lambda-term with the given lemma. This is expected if a goal was admitted, not so much otherwise.\x1B[31m"
-        end
+        try
+            let m = normal (fst !proof) in
+            if typecheck [] m prop then
+                print_endline (string_of_lam m)
+            else raise (Failure ":(")
+        with
+            (* Runs either if normal or typecheck fails (because there are holes in the lambda-term) or if it returns false (for whatever reason) *)
+            Failure _ -> print_endline typecheck_failure
     end

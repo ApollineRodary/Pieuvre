@@ -16,11 +16,6 @@ let admit (gs : goal list) : (lam * goal list) =
     | [] -> raise No_Goals_Left
     | _::gs -> Hole, gs
 
-let admitted (gs : goal list) : (lam * goal list) =
-    match gs with
-    | [] -> raise Proof_Admitted
-    | _ -> raise Incomplete_Proof
-
 let apply (x : var) (gs : goal list) : (lam * goal list) =
     let rec aux (t_arr : ty) (t_goal : ty) (env : env) (m : lam)  (gs : goal list) : (lam * goal list) = 
         (*Takes a chain of arrows (e.g. A->B->C->D) ending with a goal type and returns goals for each of the intermediate steps*)
@@ -87,7 +82,6 @@ let exact (m : lam) (gs : goal list) : (lam * goal list) =
         if typecheck gam m a then (m, gs)
         else raise Cannot_Apply_Tactic
 
-
 let exfalso (gs : goal list) : (lam * goal list) = match gs with
     | [] -> raise No_Goals_Left
     | (gam, a)::gs -> (Exf (Hole, a), (gam, False)::gs)
@@ -148,11 +142,6 @@ let split (gs : goal list) : (lam * goal list) =
                 (lam, a_goal::b_goal::gs)
             | _ -> raise Cannot_Apply_Tactic
         end
-
-let qed (gs : goal list) : (lam * goal list) =
-    match gs with
-    | [] -> raise Proven
-    | _ -> raise Incomplete_Proof
 
 let use_tactic (t : tactic) ((l, gs): proof) : proof =
     let (m, gs) = t gs in

@@ -8,8 +8,11 @@ type proof = lam * (goal list)
 
 type tactic = (goal list) -> (lam * goal list)
 
-exception Proven
-exception Proof_Admitted
+type command =
+    | Qed
+    | Admitted
+    | UseTactic of tactic
+    | Print
+
 exception No_Goals_Left
-exception Incomplete_Proof
 exception Cannot_Apply_Tactic

@@ -16,5 +16,3 @@ let intros = Tactics.intros
 let left = Tactics.left
 let right = Tactics.right
 let split = Tactics.split
-let qed = Tactics.qed
-let admitted = Tactics.admitted

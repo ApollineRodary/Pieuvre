@@ -16,7 +16,7 @@ let read_prop (lexbuf : Lexing.lexbuf) =
     let request = parse lexbuf (Parsing__Parser.property_request) in
     Option.get request
 
-let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool ref) =
+let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool ref) (out : out_channel) =
     Proof__Display.print_goals (snd !proof);
     print_newline ();
     print_newline ();
@@ -28,7 +28,7 @@ let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool 
             clear ();
             try
                 proof := use_tactic t !proof;
-                Printf.fprintf (open_out "preuve.8pus") "%s.\n" cmd
+                Printf.fprintf out "%s.\n" cmd
             with
             | Cannot_Apply_Tactic -> print_string could_not_apply_tactic
             | No_Goals_Left -> print_string no_goals
@@ -42,6 +42,7 @@ let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool 
             | [] -> 
                 begin
                     print_string admitted;
+                    Printf.fprintf out "Admitted.";
                     continue := false
                 end
             | _ -> print_string incomplete_proof
@@ -55,6 +56,7 @@ let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool 
             | [] -> 
                 begin
                     print_string successfully_proven;
+                    Printf.fprintf out "Qed.";
                     continue := false
                 end
             | _ -> print_string incomplete_proof
@@ -72,9 +74,12 @@ let start_proof (lexbuf : Lexing.lexbuf) =
     let prop = read_prop lexbuf in
     let proof = ref (proof_start prop)
     and message = ref ""
-    and continue = ref true in
-    begin   
-        while (!continue) do read_commands lexbuf proof continue
+    and continue = ref true
+    and oc = open_out "proof.8pus" in
+    begin
+        Printf.fprintf oc "%s.\n" (Lambda__Display.string_of_type prop);
+        while (!continue) do
+            read_commands lexbuf proof continue oc
         done;
         
         clear ();
@@ -85,7 +90,10 @@ let start_proof (lexbuf : Lexing.lexbuf) =
         try
             let m = normal (fst !proof) in
             if typecheck [] m prop then
-                print_endline (string_of_lam m)
+                begin
+                    print_endline (string_of_lam m);
+                    Printf.fprintf (open_out "proof.lam") "%s" (string_of_lam m)
+                end
             else raise (Failure ":(")
         with
             (* Runs either if normal or typecheck fails (because there are holes in the lambda-term) or if it returns false (for whatever reason) *)

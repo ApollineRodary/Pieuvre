@@ -5,6 +5,10 @@ _build/
 *.install
 *.conflicts
 
+# Pieuvre generated files
+proof.8pus
+proof.lam
+
 # Local OPAM switch
 _opam/
 

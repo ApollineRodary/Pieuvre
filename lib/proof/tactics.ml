@@ -62,8 +62,7 @@ let elim (x : var) (gs : goal list) : (lam * goal list) =
             match List.assoc x env with 
             | False -> (Exf (Var x, ty), gs)
             | And (a, b) ->
-                let abst = Abstraction (x, a, Abstraction (x, b, Hole)) in
-                let appl = Application (Application (abst, Fst (Var x)), Snd (Var x)) in
+                let appl = Application (Application (Hole, Fst (Var x)), Snd (Var x)) in
                 let ty = Arrow (a, Arrow (b, ty)) in
                 appl, (env, ty)::gs
             | Or (a, b) ->

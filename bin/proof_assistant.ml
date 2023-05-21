@@ -61,7 +61,7 @@ let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool 
     | Print ->
         begin
             clear ();
-            print_lam (fst !proof)
+            print_lam (fst !proof); print_newline ()
         end
 
 let start_proof (lexbuf : Lexing.lexbuf) =

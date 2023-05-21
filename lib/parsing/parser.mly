@@ -120,7 +120,7 @@ property_request:
 
 command:
     | ptactic PERIOD
-        { UseTactic $1 }
+        { let (a, b) = $1 in UseTactic (a, b) }
     | ADMITTED PERIOD
         { Admitted }
     | QED PERIOD
@@ -130,32 +130,32 @@ command:
 ;
 
 ptactic:
-    | ABSURD ptype
-        { absurd $2 }
+    | ABSURD ty = ptype
+        { (absurd ty, "absurd " ^ Lambda__Display.string_of_type ty) }
     | ADMIT
-        { admit }
-    | APPLY VAR
-        { apply $2 }
+        { (admit, "admit") }
+    | APPLY var = VAR
+        { (apply var, "apply " ^ var) }
     | ASSUMPTION
-        { assumption }
-    | CUT ptype
-        { cut $2 }
-    | ELIM VAR
-        { elim $2 }
-    | EXACT lterm
-        { exact $2 }
+        { assumption, "assumption" }
+    | CUT ty = ptype
+        { (cut ty, "cut " ^ Lambda__Display.string_of_type ty) }
+    | ELIM var = VAR
+        { (elim var, "elim " ^ var) }
+    | EXACT t = lterm
+        { (exact t, "exact " ^ Lambda__Display.string_of_lam t) }
     | EXFALSO
-        { exfalso }
-    | INTRO VAR
-        { intro $2 }
-    | INTROS var_list
-        { intros $2 }
+        { (exfalso, "exfalso") }
+    | INTRO var = VAR
+        { (intro var, "intro " ^ var) }
+    | INTROS vl = var_list
+        { (intros vl, List.fold_left (fun x y -> x ^ " " ^ y) "intros" vl) }
     | LEFT
-        { left }
+        { (left, "left") }
     | RIGHT
-        { right }
+        { (right, "right") }
     | SPLIT
-        { split }
+        { (split, "split") }
 ;
 
 var_list:

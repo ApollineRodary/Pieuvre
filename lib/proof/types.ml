@@ -11,7 +11,7 @@ type tactic = (goal list) -> (lam * goal list)
 type command =
     | Qed
     | Admitted
-    | UseTactic of tactic
+    | UseTactic of tactic * string
     | Print
 
 exception No_Goals_Left

@@ -23,10 +23,12 @@ let read_commands (lexbuf : Lexing.lexbuf) (proof : proof ref) (continue : bool 
 
     let command = Option.get (parse lexbuf (Parsing__Parser.command)) in
     match command with
-    | UseTactic t ->
+    | UseTactic (t, cmd) ->
         begin
             clear ();
-            try proof := use_tactic t !proof
+            try
+                proof := use_tactic t !proof;
+                Printf.fprintf (open_out "preuve.8pus") "%s.\n" cmd
             with
             | Cannot_Apply_Tactic -> print_string could_not_apply_tactic
             | No_Goals_Left -> print_string no_goals

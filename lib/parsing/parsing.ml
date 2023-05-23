@@ -7,11 +7,7 @@ let parse (lex : lexbuf) (start) =
             print_endline ("Syntax error: " ^ msg);
             None
         end
-    | Parser.Error ->
-        begin
-            print_endline "Parsing error";
-            None
-        end
+    | Parser.Error -> None
 
 let lam_of_channel (channel:in_channel) = parse (from_channel channel) (Parser.lterm_eof)
 

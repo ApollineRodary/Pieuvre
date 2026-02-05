@@ -1,6 +1,6 @@
 # Pieuvre by Théa et Apolline
 
-**Pieuvre** est un assistant de preuve minimal inspiré par Rocq, implémenté dans le cadre du cours de Projet Fonctionnel de L3 à l'Ecole Normale Supérieure de Lyon. Cette implémentation est proposée par Thibault Hervier (également de l'ENS) et moi-même. Au fur et à mesure que l'utilisateur progresse dans la preuve en cours, Pieuvre construit un [lambda-terme typé](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence) correspondant à la preuve.
+**Pieuvre** est un assistant de preuve minimal inspiré par Rocq, implémenté dans le cadre du cours de Projet Fonctionnel de L3 à l'Ecole Normale Supérieure de Lyon. Cette implémentation est proposée par Théa Hervier (également de l'ENS) et moi-même. Au fur et à mesure que l'utilisateur progresse dans la preuve en cours, Pieuvre construit un [lambda-terme typé](https://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence) correspondant à la preuve.
 
 ## Fonctionnalités
 
